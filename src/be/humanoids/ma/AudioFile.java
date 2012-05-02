@@ -14,25 +14,23 @@ public class AudioFile
 {
     File file;
     
-    AudioFile() {
-        //file = new File();
+    AudioFile(String path) {
+        file = new File(path);
     }
     
     /**
      * Write a raw Audiostream to a file
      */
-    public void writeFile(ByteArrayOutputStream data,AudioFormat format, String name) {
+    public void writeFile(ByteArrayOutputStream data,AudioFormat format) {
        byte[] rawAudioData = data.toByteArray();
        InputStream inputStream = new ByteArrayInputStream(rawAudioData);
        AudioInputStream audioInputStream = new AudioInputStream(inputStream, format, rawAudioData.length/format.getFrameSize());
        
        try {
             AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, file);
-            
-            // write file to disk
        }
        catch(IOException e) {
-           System.out.println(e);
+           System.out.println("Error when writing to file: "+e);
        }
     }
     

@@ -6,8 +6,8 @@ public class AnalyzeAudio {
         AudioInput a = new AudioInput();
         a.startRecording();
         
-        AudioFile af = new AudioFile();
-        af.writeFile(a.stopRecording(),a.getAudioFormat(),"TestFile");
+        AudioFile af = new AudioFile("E:/Users/Martin/Temp/TestFile.wav");
+        af.writeFile(a.stopRecording(),a.getAudioFormat());
         
     }
 }

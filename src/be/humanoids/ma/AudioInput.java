@@ -19,10 +19,11 @@ public class AudioInput {
   ByteArrayOutputStream byteArrayOutputStream;
   AudioFormat audioFormat;
   TargetDataLine targetDataLine;
-  AudioRecorderThread thread = new AudioRecorderThread(targetDataLine);
+  AudioRecorderThread thread;
     
     AudioInput() {
         audioFormat = getAudioFormat();
+        thread = new AudioRecorderThread(targetDataLine);
     }
     
     /**
@@ -38,7 +39,7 @@ public class AudioInput {
            
             thread.start();
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Error when while inizializing recording: "+e);
             System.exit(0);
         }
     }
@@ -47,7 +48,7 @@ public class AudioInput {
         return thread.stopRecording();
     }
     
-    public AudioFormat getAudioFormat() {
+    final AudioFormat getAudioFormat() {
         float sampleRate = 44100.0F;
         //8000,11025,16000,22050,44100
         int sampleSizeInBits = 16;
