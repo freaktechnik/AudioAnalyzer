@@ -23,7 +23,6 @@ public class AudioInput {
     
     AudioInput() {
         audioFormat = getAudioFormat();
-        thread = new AudioRecorderThread(targetDataLine);
     }
     
     /**
@@ -37,9 +36,10 @@ public class AudioInput {
             targetDataLine.open(audioFormat);
             targetDataLine.start();
            
-            thread.start();
+            thread = new AudioRecorderThread(targetDataLine);
+            thread.start(); // Error on this line (Nullpointer)
         } catch (Exception e) {
-            System.out.println("Error when while inizializing recording: "+e);
+            System.out.println("Error while inizializing recording: "+e);
             System.exit(0);
         }
     }

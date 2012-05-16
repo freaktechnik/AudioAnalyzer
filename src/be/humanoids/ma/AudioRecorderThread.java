@@ -27,6 +27,7 @@ public class AudioRecorderThread extends Thread
     
     @Override
     public void start() {
+        super.start();
         record = true;
         
         // always try, since errors can happen!
