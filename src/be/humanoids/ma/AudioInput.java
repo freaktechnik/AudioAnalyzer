@@ -17,12 +17,13 @@ import javax.sound.sampled.TargetDataLine;
 public class AudioInput {
     
   ByteArrayOutputStream byteArrayOutputStream;
-  AudioFormat audioFormat;
+  LocalAudioFormat audioFormat;
   TargetDataLine targetDataLine;
   AudioRecorderThread thread;
     
     AudioInput() {
-        audioFormat = getAudioFormat();
+        audioFormat = new LocalAudioFormat();
+        thread = new AudioRecorderThread(targetDataLine);
     }
     
     /**
@@ -31,39 +32,28 @@ public class AudioInput {
      */
     public void startRecording() {
         try{
-            DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat);
-            targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
-            targetDataLine.open(audioFormat);
-            targetDataLine.start();
-           
-            thread = new AudioRecorderThread(targetDataLine);
-            thread.start(); // Error on this line (Nullpointer)
-        } catch (Exception e) {
+            if(targetDataLine==null) {
+                DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat.getAudioFormat());
+                targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
+                targetDataLine.open(audioFormat.getAudioFormat());
+            }
+            thread.run(); // Error on this line (Nullpointer)
+            
+        } catch(Exception e) {
             System.out.println("Error while inizializing recording: "+e);
             System.exit(0);
         }
     }
     
+    /**
+     * stops capturing the input audio
+     * @return Captured audio
+     */
     public ByteArrayOutputStream stopRecording() {
-        return thread.stopRecording();
+        return thread.stop();
     }
     
-    final AudioFormat getAudioFormat() {
-        float sampleRate = 44100.0F;
-        //8000,11025,16000,22050,44100
-        int sampleSizeInBits = 16;
-        //8,16
-        int channels = 1;
-        //1,2
-        boolean signed = true;
-        //true,false
-        boolean bigEndian = false;
-        //true,false
-        return new AudioFormat(
-                        sampleRate,
-                        sampleSizeInBits,
-                        channels,
-                        signed,
-                        bigEndian);
+    public AudioFormat getAudioFormat() {
+        return audioFormat.getAudioFormat();
     }
 }

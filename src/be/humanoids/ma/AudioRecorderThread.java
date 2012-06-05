@@ -8,16 +8,19 @@ import java.io.*;
  *
  * @author Martin Giger
  */
-public class AudioRecorderThread extends Thread
+public class AudioRecorderThread  implements Runnable
 {
     byte[] buffer = new byte[10000];
     boolean record = false;
+    Thread T;
     
     TargetDataLine targetDataLine;
     ByteArrayOutputStream data;
     
     AudioRecorderThread(TargetDataLine t) {
         targetDataLine = t;
+        T = new Thread(this);
+        data = new ByteArrayOutputStream();
     }
     
     /**
@@ -26,12 +29,11 @@ public class AudioRecorderThread extends Thread
      */
     
     @Override
-    public void start() {
-        super.start();
+    public void run() {
         record = true;
-        
         // always try, since errors can happen!
         try {
+            targetDataLine.start();
             while(record) {
                 int count = targetDataLine.read(buffer, 0, buffer.length);
                 if(count > 0)
@@ -46,10 +48,10 @@ public class AudioRecorderThread extends Thread
     }
     
     /**
-     * unluckily stop() is already overriden by Thread, so this can't be done here.
-     * This stops reading the data from the soundcard and returns the audio data.
+     * This stops reading the data from the soundcard.
+     * @return audio data.
      */
-    public ByteArrayOutputStream stopRecording() {
+    public ByteArrayOutputStream stop() {
         record = false;
         return data;
     }
