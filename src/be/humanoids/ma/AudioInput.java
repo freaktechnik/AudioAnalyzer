@@ -20,10 +20,12 @@ public class AudioInput {
   LocalAudioFormat audioFormat;
   TargetDataLine targetDataLine;
   AudioRecorderThread thread;
+  DataLine.Info dataLineInfo;
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();
-        thread = new AudioRecorderThread(targetDataLine);
+        thread = new AudioRecorderThread();
+        dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat.getAudioFormat());
     }
     
     /**
@@ -33,11 +35,11 @@ public class AudioInput {
     public void startRecording() {
         try{
             if(targetDataLine==null) {
-                DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat.getAudioFormat());
                 targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
                 targetDataLine.open(audioFormat.getAudioFormat());
             }
-            thread.run(); // Error on this line (Nullpointer)
+                thread.setT(targetDataLine);
+                thread.run();
             
         } catch(Exception e) {
             System.out.println("Error while inizializing recording: "+e);

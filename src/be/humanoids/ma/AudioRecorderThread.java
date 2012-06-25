@@ -17,8 +17,7 @@ public class AudioRecorderThread  implements Runnable
     TargetDataLine targetDataLine;
     ByteArrayOutputStream data;
     
-    AudioRecorderThread(TargetDataLine t) {
-        targetDataLine = t;
+    AudioRecorderThread() {
         T = new Thread(this);
         data = new ByteArrayOutputStream();
     }
@@ -33,6 +32,9 @@ public class AudioRecorderThread  implements Runnable
         record = true;
         // always try, since errors can happen!
         try {
+            if(targetDataLine==null) {
+                System.out.println("here we goo!");
+            }
             targetDataLine.start();
             while(record) {
                 int count = targetDataLine.read(buffer, 0, buffer.length);
@@ -45,6 +47,10 @@ public class AudioRecorderThread  implements Runnable
             System.out.println(e);
             System.exit(1);
         }
+    }
+    
+    public void setT(TargetDataLine t) {
+        targetDataLine = t;
     }
     
     /**
