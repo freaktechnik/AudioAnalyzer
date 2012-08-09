@@ -11,7 +11,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
 
 /**
- *
+ * An audio input is a sample recorded from the audio input of the soundcard.
  * @author Martin
  */
 public class AudioInput {
@@ -53,6 +53,13 @@ public class AudioInput {
      */
     public ByteArrayOutputStream stopRecording() {
         return thread.stop();
+    }
+    
+    /**
+     * starts capturing
+     */
+    public void resumeRecording() {
+        thread.run();
     }
     
     public AudioFormat getAudioFormat() {

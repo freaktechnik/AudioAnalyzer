@@ -5,7 +5,7 @@ package be.humanoids.ma;
 import javax.sound.sampled.*;
 import java.io.*;
 /**
- *
+ * The audio recorder thread collects the input from the soundcard, byte by byte.
  * @author Martin Giger
  */
 public class AudioRecorderThread  implements Runnable
@@ -29,7 +29,7 @@ public class AudioRecorderThread  implements Runnable
     
     @Override
     public void run() {
-        record = true;
+        record = false;
         // always try, since errors can happen!
         try {
             if(targetDataLine==null) {
@@ -48,6 +48,11 @@ public class AudioRecorderThread  implements Runnable
             System.exit(1);
         }
     }
+    
+    /**
+     * Set the targetDataLine once it is set
+     * @param t the TargetDataLine you want to use
+     */
     
     public void setT(TargetDataLine t) {
         targetDataLine = t;

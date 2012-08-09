@@ -7,8 +7,8 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 /**
- *
- * @author Markus Jordi
+ * An AudioInput can be written to an audiofile on the disk.
+ * @author Martin
  */
 public class AudioFile
 {
@@ -30,7 +30,7 @@ public class AudioFile
             AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, file);
        }
        catch(IOException e) {
-           System.out.println("Error when writing to file: "+e);
+           System.out.println("Error when writing to file "+file.getName()+" : "+e);
        }
     }
     

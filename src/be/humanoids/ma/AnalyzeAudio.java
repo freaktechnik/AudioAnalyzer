@@ -3,11 +3,9 @@ package be.humanoids.ma;
 public class AnalyzeAudio {
 
     public static void main(String[] args) {
+        Window mainWin = Window.getWindow();
         AudioInput a = new AudioInput();
         a.startRecording();
-        
-        AudioFile af = new AudioFile("E:/Users/Martin/Temp/TestFile.wav");
-        af.writeFile(a.stopRecording(),a.getAudioFormat());
-        
+        mainWin.setAudioInput(a);        
     }
 }
