@@ -19,12 +19,15 @@ public class FFT {
         for(int i= 0;i<endf-startf;i++) {
             freq[i] = new Tone(startf+i);
         }
+        data = new double[(int)Math.pow(2,3)];
     }
     
     public void setInput(ByteArrayOutputStream a) {
-        ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
-        for(int i=0;i<a.size();i++) {
-            data[i] = (double)b.read();
+        if(a!=null) {
+            ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
+            for(int i=0;i<Math.pow(2,3);i++) {
+                data[i] = (double)b.read();
+            }
         }
     }
     

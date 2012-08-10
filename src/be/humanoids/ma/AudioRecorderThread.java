@@ -13,12 +13,15 @@ public class AudioRecorderThread  implements Runnable
 {
     byte[] buffer = new byte[10000];
     boolean record = false;
+    Tone[] freq;
+    FFT fourier;
     
     TargetDataLine targetDataLine;
     ByteArrayOutputStream data;
     
-    AudioRecorderThread() {
+    AudioRecorderThread(int s,int e) {
         data = new ByteArrayOutputStream();
+        fourier = new FFT(s,e);
     }
     
     /**
@@ -40,7 +43,11 @@ public class AudioRecorderThread  implements Runnable
                 if(count > 0) {
                     data.write(buffer, 0, count);
                 }
-                        
+                if(data.size()>Math.pow(2,3)) {
+                    fourier.setInput(data);
+                    freq = fourier.getSpectrum();
+                    data.reset();
+                }                        
             }
             data.close();
             targetDataLine.close();
@@ -56,8 +63,9 @@ public class AudioRecorderThread  implements Runnable
      * @param t the TargetDataLine you want to use
      */
     
-    public void setT(TargetDataLine t) {
+    public void setT(TargetDataLine t, Tone[] a) {
         targetDataLine = t;
+        freq = a;
     }
     
     /**
