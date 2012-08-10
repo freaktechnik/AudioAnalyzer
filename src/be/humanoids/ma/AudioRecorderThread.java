@@ -2,8 +2,9 @@
 package be.humanoids.ma;
 
 
-import javax.sound.sampled.*;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import javax.sound.sampled.TargetDataLine;
 /**
  * The audio recorder thread collects the input from the soundcard, byte by byte.
  * @author Martin Giger
@@ -12,13 +13,11 @@ public class AudioRecorderThread  implements Runnable
 {
     byte[] buffer = new byte[10000];
     boolean record = false;
-    Thread T;
     
     TargetDataLine targetDataLine;
     ByteArrayOutputStream data;
     
     AudioRecorderThread() {
-        T = new Thread(this);
         data = new ByteArrayOutputStream();
     }
     
