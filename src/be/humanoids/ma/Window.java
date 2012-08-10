@@ -3,6 +3,7 @@ package be.humanoids.ma;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.EventObject;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -12,17 +13,18 @@ import javax.swing.JLabel;
  * the main Window Object, is a singleton.
  * @author Martin
  */
-public class Window extends JFrame {
+public class Window extends JFrame implements TransformedEventListener {
     private static Window singletonWindow;
     private boolean recording = false;
     private JButton record;
     AudioInput a;
     Visualizer visual;
     ImageIcon img;
+    private JLabel label;
     
     private Window() {     
         img = new ImageIcon();
-        JLabel label = new JLabel(img);
+        label = new JLabel(img);
         
         record = new JButton("Start");
         record.addActionListener(new ActionListener() {
@@ -56,6 +58,8 @@ public class Window extends JFrame {
         a = ai;
         visual = new Visualizer(a.freq);
         record.setEnabled(true);
+        
+        a.arthread.fourier.addEventListener(this);
     }
     
     private void toggleRecording() {
@@ -77,7 +81,16 @@ public class Window extends JFrame {
     }
     
     private void getVisualizer() {
-        
+        img = new ImageIcon(visual.createImage());
+        label.setIcon(img);
+
+    }
+    
+    @Override
+    public void handleTransformEvent(EventObject e, Tone[] freq) {
+        a.freq = freq;
+        visual.updateFrequencies(freq);
+        getVisualizer();
     }
     
 }

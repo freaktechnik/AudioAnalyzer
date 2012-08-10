@@ -11,7 +11,7 @@ public class Visualizer {
     
     Visualizer(Tone[] frequencies) {
         freq = frequencies;
-        img = new BufferedImage(freq.length,250,BufferedImage.TYPE_INT_RGB);
+        img = new BufferedImage(freq.length+1,251,BufferedImage.TYPE_INT_RGB);
     }
     
     public BufferedImage createImage() {
@@ -29,7 +29,7 @@ public class Visualizer {
         double factor = maxAmp/250;
         
         for(int f=0;f<freq.length;f++) {
-            int height = (int)Math.floor(freq[f].getAplitude()*factor);
+            int height = (int)Math.floor(freq[f].getAplitude()/factor);
             for(int y = 1;y<=height;y++) {
                 img.setRGB(f+1, y, col);
             }
@@ -48,5 +48,9 @@ public class Visualizer {
                 img.setRGB(x,y,col);
             }
         }
+    }
+    
+    public void updateFrequencies(Tone[] f) {
+        freq = f;
     }
 }

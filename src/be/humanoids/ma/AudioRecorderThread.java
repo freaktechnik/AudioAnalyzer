@@ -14,7 +14,7 @@ public class AudioRecorderThread  implements Runnable
     byte[] buffer = new byte[10000];
     boolean record = false;
     Tone[] freq;
-    FFT fourier;
+    public FFT fourier;
     
     TargetDataLine targetDataLine;
     ByteArrayOutputStream data;
@@ -35,7 +35,7 @@ public class AudioRecorderThread  implements Runnable
         // always try, since errors can happen!
         try {
             if(targetDataLine==null) {
-                throw new Error("No target DataLine defined, can't start to capture it");
+                System.out.println("No target DataLine defined, can't start to capture it");
             }
             targetDataLine.start();
             while(record) {
@@ -45,7 +45,7 @@ public class AudioRecorderThread  implements Runnable
                 }
                 if(data.size()>Math.pow(2,3)) {
                     fourier.setInput(data);
-                    freq = fourier.getSpectrum();
+                    fourier.getSpectrum();
                     data.reset();
                 }                        
             }

@@ -19,7 +19,7 @@ public class AudioInput {
   ByteArrayOutputStream byteArrayOutputStream;
   LocalAudioFormat audioFormat;
   TargetDataLine targetDataLine;
-  AudioRecorderThread arthread;
+  public AudioRecorderThread arthread;
   Thread thread;
   DataLine.Info dataLineInfo;
   Tone[] freq;

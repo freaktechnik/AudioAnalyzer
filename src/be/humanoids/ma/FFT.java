@@ -6,11 +6,31 @@ package be.humanoids.ma;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 /**
  *
  * @author Martin
  */
 public class FFT {
+    // Event stuff
+    private List _listeners = new ArrayList();
+    public synchronized void addEventListener(TransformedEventListener listener) {
+        _listeners.add(listener);
+    }
+    public synchronized void removeEventListener(TransformedEventListener listener) {
+        _listeners.remove(listener);
+    }
+
+    private synchronized void fireEvent(Tone[] freq) {
+        TransformedEvent event = new TransformedEvent(this);
+        Iterator i = _listeners.iterator();
+        while(i.hasNext()) {
+            ((TransformedEventListener) i.next()).handleTransformEvent(event,freq);
+        }
+    }
+
     private Tone[] freq;
     private double[] data;
     
@@ -35,7 +55,7 @@ public class FFT {
         for(int i=0;i<freq.length;i++) {
             freq[i].setAmplitude(transform(data,i));
         }
-        
+        fireEvent(freq);
         return freq;
     }
     
