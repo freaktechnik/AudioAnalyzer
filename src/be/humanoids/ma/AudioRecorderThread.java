@@ -29,19 +29,22 @@ public class AudioRecorderThread  implements Runnable
     
     @Override
     public void run() {
-        record = false;
+        record = true;
         // always try, since errors can happen!
         try {
             if(targetDataLine==null) {
-                System.out.println("here we goo!");
+                throw new Error("No target DataLine defined, can't start to capture it");
             }
             targetDataLine.start();
             while(record) {
                 int count = targetDataLine.read(buffer, 0, buffer.length);
-                if(count > 0)
-                        data.write(buffer, 0, count);
+                if(count > 0) {
+                    data.write(buffer, 0, count);
+                }
+                        
             }
             data.close();
+            targetDataLine.close();
         }
         catch(IOException e) {
             System.out.println(e);

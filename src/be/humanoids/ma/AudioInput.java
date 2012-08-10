@@ -19,12 +19,14 @@ public class AudioInput {
   ByteArrayOutputStream byteArrayOutputStream;
   LocalAudioFormat audioFormat;
   TargetDataLine targetDataLine;
-  AudioRecorderThread thread;
+  AudioRecorderThread arthread;
+  Thread thread;
   DataLine.Info dataLineInfo;
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();
-        thread = new AudioRecorderThread();
+        arthread = new AudioRecorderThread();
+        thread = new Thread(arthread);
         dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat.getAudioFormat());
     }
     
@@ -38,8 +40,7 @@ public class AudioInput {
                 targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
                 targetDataLine.open(audioFormat.getAudioFormat());
             }
-                thread.setT(targetDataLine);
-                thread.run();
+                arthread.setT(targetDataLine);
             
         } catch(Exception e) {
             System.out.println("Error while inizializing recording: "+e);
@@ -52,14 +53,14 @@ public class AudioInput {
      * @return Captured audio
      */
     public ByteArrayOutputStream stopRecording() {
-        return thread.stop();
+        return arthread.stop();
     }
     
     /**
      * starts capturing
      */
     public void resumeRecording() {
-        thread.run();
+        thread.start();
     }
     
     public AudioFormat getAudioFormat() {
