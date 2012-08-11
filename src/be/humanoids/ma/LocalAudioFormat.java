@@ -28,7 +28,7 @@ public class LocalAudioFormat {
         //8,16
         boolean signed = true;
 
-        boolean bigEndian = false;
+        boolean bigEndian = true;
 
         return new javax.sound.sampled.AudioFormat(
                         sampleRate,

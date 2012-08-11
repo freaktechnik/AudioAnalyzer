@@ -6,9 +6,9 @@ package be.humanoids.ma;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 /**
  *
  * @author Martin
@@ -23,18 +23,11 @@ public class FFT {
         _listeners.remove(listener);
     }
 
-    private synchronized void fireEvent(Tone[] freq) {
+    private synchronized void fireEvent(Tone[] freq, double[] d) {
         TransformedEvent event = new TransformedEvent(this);
         Iterator i = _listeners.iterator();
         while(i.hasNext()) {
-            ((TransformedEventListener) i.next()).handleTransformEvent(event,freq);
-        }
-    }
-    private synchronized void fireEvent(double[] by) {
-        TransformedEvent event = new TransformedEvent(this);
-        Iterator i = _listeners.iterator();
-        while(i.hasNext()) {
-            ((TransformedEventListener) i.next()).handleTransformEvent(event,by);
+            ((TransformedEventListener) i.next()).handleTransformEvent(event,freq,d);
         }
     }
 
@@ -56,8 +49,12 @@ public class FFT {
         if(a!=null) {
             ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
             for(int i=0;i<samplelength;i++) {
-                data[i] = (double)b.read();
+                double actual = (double)b.read();
+                if(actual>128)
+                    actual-=256;
+                data[i] = actual;
             }
+
         }
     }
     
@@ -65,7 +62,7 @@ public class FFT {
         for(int i=0;i<freq.length;i++) {
             freq[i].setAmplitude(transform(data,i));
         }
-        fireEvent(data);
+        fireEvent(freq,data);
         return freq;
     }
     

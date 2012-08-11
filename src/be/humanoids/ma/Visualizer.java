@@ -1,7 +1,6 @@
 package be.humanoids.ma;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 /**
  * Creates a simple visualizer out of a Tone array.
  * @author Martin
@@ -38,7 +37,7 @@ public class Visualizer {
         for(int f=0;f<freq.length/50;f++) {
             int height = 0;
             for(int j=0;j<50;j++) {
-                height = height + (int)Math.floor(freq[f*50+j].getAplitude()/factor);
+                height = (int) (height + Math.floor(freq[f*50+j].getAplitude()/factor));
             }
             height = height/50;
             for(int y = 1;y<=height;y++) {
@@ -57,15 +56,16 @@ public class Visualizer {
         int col = (r << 16) | (g << 8) | b;
         
         double max = 0;
-        for(int i = 0;i<data.length;i++) {
-            if(Math.abs(data[i])>max)
-                max=Math.abs(data[i]);
+        for(int i =0;i<data.length;i++) {
+            data[i]+=128;
         }
-        double factor = max/250;
+
+        double factor = 256/250;
         
         for(int i=0;i<data.length;i++) {
-            int height = (int)Math.floor(data[i]/factor);
-            img.setRGB(i+1,250-(height>125?height-125:height+125) ,col);
+            double actual = data[i];
+            int height = (int)(Math.floor(data[i])/factor);
+            img.setRGB(i+1,height ,col);
         }
         
         return img;

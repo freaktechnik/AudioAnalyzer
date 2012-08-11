@@ -17,6 +17,7 @@ public class Window extends JFrame implements TransformedEventListener {
     Visualizer visual;
     ImageIcon img;
     private JLabel label;
+    String visualizerType;
     
     private Window() {     
         img = new ImageIcon();
@@ -34,6 +35,28 @@ public class Window extends JFrame implements TransformedEventListener {
         // Add button to a panel
         JPanel buttonPanel = new JPanel( );
         buttonPanel.add(record);
+        
+        JRadioButton waveform = new JRadioButton("Waveform");
+        waveform.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisualizer("Waveform");
+            }
+        });
+        JRadioButton transform = new JRadioButton("Transform");
+        transform.setSelected(true);
+        transform.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisualizer("Transform");
+            }
+        });
+
+        ButtonGroup visualizer = new ButtonGroup();
+        visualizer.add(waveform);
+        visualizer.add(transform);
+        buttonPanel.add(waveform);
+        buttonPanel.add(transform);
         
         setSize(400, 350);
         setTitle("Audio Analyzer");
@@ -53,6 +76,7 @@ public class Window extends JFrame implements TransformedEventListener {
     public void setAudioInput(AudioInput ai) {
         a = ai;
         visual = new Visualizer(a.freq);
+        visualizerType = "Transform";
         record.setEnabled(true);
         
         a.arthread.fourier.addEventListener(this);
@@ -77,20 +101,25 @@ public class Window extends JFrame implements TransformedEventListener {
     }
     
     private void getVisualizer() {
-        img = new ImageIcon(visual.createWaveformImage());
+        if(visualizerType=="Waveform") {
+            img = new ImageIcon(visual.createWaveformImage());
+        }
+        else {
+            img = new ImageIcon(visual.createTransformImage());
+        }
         label.setIcon(img);
 
     }
     
-    @Override
-    public void handleTransformEvent(EventObject e, double[] freq) {
-        visual.updateData(freq);
-        getVisualizer();
+    private void setVisualizer(String type) {
+        visualizerType = type;
     }
+    
     @Override
-    public void handleTransformEvent(EventObject e, Tone[] freq) {
+    public void handleTransformEvent(EventObject e, Tone[] freq, double[] d) {
         a.freq = freq;
         visual.updateFrequencies(freq);
+        visual.updateData(d);
         getVisualizer();
     }
     

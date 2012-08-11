@@ -44,11 +44,11 @@ public class AudioRecorderThread  implements Runnable
                 int count = targetDataLine.read(buffer, 0, buffer.length);
                 if(count > 0) {
                     data.write(buffer, 0, count);
-                }
-                if(data.size()>=samplelength) {
-                    fourier.setInput(data);
-                    fourier.getSpectrum();
-                    data.reset();
+                    if(data.size()>=samplelength) {
+                        fourier.setInput(data);
+                        fourier.getSpectrum();
+                        data.reset();
+                    }
                 }
             }
             data.close();
