@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package be.humanoids.ma;
 
 /**
@@ -9,7 +5,11 @@ package be.humanoids.ma;
  * @author Martin
  */
 public class LocalAudioFormat {
-    int channels = 1;
+    int channels;
+    
+    LocalAudioFormat() {
+        channels = 1;
+    }
     
     public void setAudioFormat(String param,int value) {
         switch(param) {
@@ -24,12 +24,12 @@ public class LocalAudioFormat {
     public javax.sound.sampled.AudioFormat getAudioFormat() {
         float sampleRate = 44100.0F;
         //8000,11025,16000,22050,44100
-        int sampleSizeInBits = 16;
+        int sampleSizeInBits = 8;
         //8,16
         boolean signed = true;
-        //true,false
+
         boolean bigEndian = false;
-        //true,false
+
         return new javax.sound.sampled.AudioFormat(
                         sampleRate,
                         sampleSizeInBits,

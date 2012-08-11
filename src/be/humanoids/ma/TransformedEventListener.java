@@ -11,4 +11,5 @@ import java.util.EventObject;
  */
 public interface TransformedEventListener {
     public void handleTransformEvent(EventObject e,Tone[] freq);
+    public void handleTransformEvent(EventObject e,double[] by);
 }

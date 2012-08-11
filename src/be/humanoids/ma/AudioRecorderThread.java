@@ -15,13 +15,15 @@ public class AudioRecorderThread  implements Runnable
     boolean record = false;
     Tone[] freq;
     public FFT fourier;
+    int samplelength;
     
     TargetDataLine targetDataLine;
     ByteArrayOutputStream data;
     
-    AudioRecorderThread(int s,int e) {
+    AudioRecorderThread(int s,int e, int l) {
         data = new ByteArrayOutputStream();
-        fourier = new FFT(s,e);
+        samplelength = l;
+        fourier = new FFT(s,e,l);
     }
     
     /**
@@ -43,11 +45,11 @@ public class AudioRecorderThread  implements Runnable
                 if(count > 0) {
                     data.write(buffer, 0, count);
                 }
-                if(data.size()>Math.pow(2,3)) {
+                if(data.size()>=samplelength) {
                     fourier.setInput(data);
                     fourier.getSpectrum();
                     data.reset();
-                }                        
+                }
             }
             data.close();
             targetDataLine.close();

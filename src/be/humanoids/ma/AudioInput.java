@@ -23,12 +23,13 @@ public class AudioInput {
   Thread thread;
   DataLine.Info dataLineInfo;
   Tone[] freq;
-  int endf = 10000;
+  int endf = 18000;
   int startf = 50;
+  int samplelength = (int)Math.pow(2,8);
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();
-        arthread = new AudioRecorderThread(startf,endf);
+        arthread = new AudioRecorderThread(startf,endf,samplelength);
         thread = new Thread(arthread);
         dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat.getAudioFormat());
         freq = new Tone[endf-startf];

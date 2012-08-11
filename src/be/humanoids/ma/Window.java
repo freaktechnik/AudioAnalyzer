@@ -4,11 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import javax.swing.*;
 /**
  * the main Window Object, is a singleton.
  * @author Martin
@@ -39,7 +35,7 @@ public class Window extends JFrame implements TransformedEventListener {
         JPanel buttonPanel = new JPanel( );
         buttonPanel.add(record);
         
-        setSize(400, 300);
+        setSize(400, 350);
         setTitle("Audio Analyzer");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         getContentPane().add(label,BorderLayout.NORTH);
@@ -81,11 +77,16 @@ public class Window extends JFrame implements TransformedEventListener {
     }
     
     private void getVisualizer() {
-        img = new ImageIcon(visual.createImage());
+        img = new ImageIcon(visual.createWaveformImage());
         label.setIcon(img);
 
     }
     
+    @Override
+    public void handleTransformEvent(EventObject e, double[] freq) {
+        visual.updateData(freq);
+        getVisualizer();
+    }
     @Override
     public void handleTransformEvent(EventObject e, Tone[] freq) {
         a.freq = freq;
