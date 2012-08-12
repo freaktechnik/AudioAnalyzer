@@ -12,21 +12,24 @@ public class Visualizer {
     
     Visualizer(Tone[] frequencies) {
         freq = frequencies;
-        img = new BufferedImage(freq.length/50+1,251,BufferedImage.TYPE_INT_RGB);
+        img = new BufferedImage(freq.length/50,250,BufferedImage.TYPE_INT_RGB);
     }
     
     Visualizer(double[] by) {
         data = by;
-        img = new BufferedImage(data.length+1,251,BufferedImage.TYPE_INT_RGB);
+        img = new BufferedImage(data.length,250,BufferedImage.TYPE_INT_RGB);
     }
     
     public BufferedImage createTransformImage() {
+        if(img.getWidth()!=freq.length/50)
+            img = new BufferedImage(freq.length/50,250,BufferedImage.TYPE_INT_RGB);
         clearImage();
         int r = 0;
         int g = 255;
         int b = 0;
-        int col = (r << 16) | (g << 8) | b;
+        int col = (r << 16) | (g << 8) | b; // green
         
+        // make sure it gets scaled, so everything fits into the graphicsfield
         double maxAmp = 0;
         for(int f=0;f<freq.length;f++) {
             if(freq[f].getAplitude()>maxAmp)
@@ -41,7 +44,7 @@ public class Visualizer {
             }
             height = height/50;
             for(int y = 1;y<=height;y++) {
-                img.setRGB(f+1, 250-y, col);
+                img.setRGB(f, 250-y, col);
             }
         }
         
@@ -49,23 +52,17 @@ public class Visualizer {
     }
     
     public BufferedImage createWaveformImage() {
+        if(img.getWidth()!=data.length)
+            img = new BufferedImage(data.length,250,BufferedImage.TYPE_INT_RGB);
         clearImage();
         int r = 0;
         int g = 0;
         int b = 255;
-        int col = (r << 16) | (g << 8) | b;
-        
-        double max = 0;
-        for(int i =0;i<data.length;i++) {
-            data[i]+=128;
-        }
-
-        double factor = 256/250;
+        int col = (r << 16) | (g << 8) | b; // blue
         
         for(int i=0;i<data.length;i++) {
-            double actual = data[i];
-            int height = (int)(Math.floor(data[i])/factor);
-            img.setRGB(i+1,height ,col);
+            int height = (int)(Math.floor(data[i]+128)/1.024);
+            img.setRGB(i,250-height-1 ,col);
         }
         
         return img;
@@ -76,8 +73,8 @@ public class Visualizer {
         int g = 255;
         int b = 255;
         int col = (r << 16) | (g << 8) | b; // gives white
-        for(int x=1;x<=freq.length/50;x++) {
-            for(int y=1;y<=250;y++) {
+        for(int x=0;x<img.getWidth();x++) {
+            for(int y=0;y<img.getHeight();y++) {
                 img.setRGB(x,y,col);
             }
         }

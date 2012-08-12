@@ -34,12 +34,14 @@ public class FFT {
     private Tone[] freq;
     private double[] data;
     int samplelength;
+    int startf;
     
     public FFT(int startf,int endf, int length) {
         freq = new Tone[endf-startf];
         for(int i= 0;i<endf-startf;i++) {
             freq[i] = new Tone(startf+i);
         }
+        this.startf = startf;
         data = new double[length];
         samplelength = length;
     }
@@ -60,7 +62,7 @@ public class FFT {
     
     public Tone[] getSpectrum() {
         for(int i=0;i<freq.length;i++) {
-            freq[i].setAmplitude(transform(data,i));
+            freq[i].setAmplitude(transform(data,startf+i));
         }
         fireEvent(freq,data);
         return freq;
