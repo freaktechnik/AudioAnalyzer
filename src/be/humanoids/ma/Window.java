@@ -18,8 +18,11 @@ public class Window extends JFrame implements TransformedEventListener {
     ImageIcon img;
     private JLabel label;
     String visualizerType;
+    private Timer transformTime;
     
     private Window() {     
+        transformTime = new Timer();
+        
         img = new ImageIcon();
         label = new JLabel(img);
         
@@ -94,6 +97,7 @@ public class Window extends JFrame implements TransformedEventListener {
                 record.setText("Stop");
                 visual.clearImage();
                 img = new ImageIcon(visual.img);
+                label.setIcon(img);
             }
             
             recording = !recording;
@@ -101,14 +105,18 @@ public class Window extends JFrame implements TransformedEventListener {
     }
     
     private void getVisualizer() {
-        if(visualizerType=="Waveform") {
+        if("Waveform".equals(visualizerType)) {
             img = new ImageIcon(visual.createWaveformImage());
         }
         else {
             img = new ImageIcon(visual.createTransformImage());
         }
         label.setIcon(img);
-
+        if(transformTime.running()) {
+            transformTime.stop();
+            System.out.println(transformTime.toHerz()+ " Hz");
+        }
+        transformTime.start();
     }
     
     private void setVisualizer(String type) {
