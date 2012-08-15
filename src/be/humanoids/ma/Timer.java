@@ -40,8 +40,12 @@ public class Timer {
         return duration;
     }
     
-    public long toHerz() {
-        return 1000/duration;
+    public double toHerz() {
+        return 1000.0/duration;
+    }
+    
+    public long getDuration() {
+        return duration;
     }
     
     public boolean running() {

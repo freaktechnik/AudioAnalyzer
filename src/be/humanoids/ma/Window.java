@@ -82,7 +82,7 @@ public class Window extends JFrame implements TransformedEventListener {
         visualizerType = "Transform";
         record.setEnabled(true);
         
-        a.arthread.fourier.addEventListener(this);
+        a.arthread.setEventTarget(this);
     }
     
     private void toggleRecording() {
@@ -114,7 +114,7 @@ public class Window extends JFrame implements TransformedEventListener {
         label.setIcon(img);
         if(transformTime.running()) {
             transformTime.stop();
-            System.out.println(transformTime.toHerz()+ " Hz");
+            System.out.println((float)transformTime.toHerz()+ " Hz");
         }
         transformTime.start();
     }
@@ -124,7 +124,7 @@ public class Window extends JFrame implements TransformedEventListener {
     }
     
     @Override
-    public void handleTransformEvent(EventObject e, Tone[] freq, double[] d) {
+    public void handleTransformEvent(EventObject e, Tone[] freq, float[] d) {
         a.freq = freq;
         visual.updateFrequencies(freq);
         visual.updateData(d);

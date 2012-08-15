@@ -25,7 +25,7 @@ public class AudioInput {
   Tone[] freq;
   int endf = 18000;
   int startf = 50;
-  int samplelength = (int)Math.pow(2,8);
+  int samplelength = (int)Math.pow(2,10);
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();

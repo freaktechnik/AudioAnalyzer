@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
  */
 public class Visualizer {
     Tone[] freq;
-    double[] data;
+    float[] data;
     BufferedImage img;
     
     Visualizer(Tone[] frequencies) {
@@ -15,7 +15,7 @@ public class Visualizer {
         img = new BufferedImage(freq.length/50,250,BufferedImage.TYPE_INT_RGB);
     }
     
-    Visualizer(double[] by) {
+    Visualizer(float[] by) {
         data = by;
         img = new BufferedImage(data.length,250,BufferedImage.TYPE_INT_RGB);
     }
@@ -30,7 +30,7 @@ public class Visualizer {
         int col = (r << 16) | (g << 8) | b; // green
         
         // make sure it gets scaled, so everything fits into the graphicsfield
-        double maxAmp = 0;
+        float maxAmp = 0;
         for(int f=0;f<freq.length;f++) {
             if(freq[f].getAplitude()>maxAmp)
                 maxAmp = freq[f].getAplitude();
@@ -84,7 +84,7 @@ public class Visualizer {
         freq = f;
     }
     
-    public void updateData(double[] a) {
+    public void updateData(float[] a) {
         data = a;
     }
 }

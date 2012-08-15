@@ -6,7 +6,7 @@ package be.humanoids.ma;
  */
 public class Tone {
     private float frequency;
-    private double amplitude;
+    private float amplitude;
     
     public Tone(float f) {
         frequency = f;
@@ -20,11 +20,11 @@ public class Tone {
         return 'a';
     }
     
-    public void setAmplitude(double amp) {
+    public void setAmplitude(float amp) {
         amplitude = amp;
     }
     
-    public double getAplitude() {
+    public float getAplitude() {
         return amplitude;
     }
 }

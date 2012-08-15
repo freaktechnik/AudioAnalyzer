@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Martin
  */
-public class FFT {
+public class FFT implements Runnable {
     // Event stuff
     private List _listeners = new ArrayList();
     public synchronized void addEventListener(TransformedEventListener listener) {
@@ -23,7 +23,7 @@ public class FFT {
         _listeners.remove(listener);
     }
 
-    private synchronized void fireEvent(Tone[] freq, double[] d) {
+    private synchronized void fireEvent(Tone[] freq, float[] d) {
         TransformedEvent event = new TransformedEvent(this);
         Iterator i = _listeners.iterator();
         while(i.hasNext()) {
@@ -32,32 +32,38 @@ public class FFT {
     }
 
     private Tone[] freq;
-    private double[] data;
+    private float[] data;
     int samplelength;
     int startf;
     
-    public FFT(int startf,int endf, int length) {
+    public FFT(int startf,int endf, int length, ByteArrayOutputStream a) {
         freq = new Tone[endf-startf];
         for(int i= 0;i<endf-startf;i++) {
             freq[i] = new Tone(startf+i);
         }
         this.startf = startf;
-        data = new double[length];
+        data = new float[length];
         samplelength = length;
+        setInput(a);
     }
     
-    public void setInput(ByteArrayOutputStream a) {
+    final void setInput(ByteArrayOutputStream a) {
         // needs a wraparound like in Visualiter.java/createWaveformImage
         if(a!=null) {
             ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
             for(int i=0;i<samplelength;i++) {
-                double actual = (double)b.read();
+                float actual = (float)b.read();
                 if(actual>128)
                     actual-=256;
                 data[i] = actual;
             }
 
         }
+    }
+    
+    @Override
+    public void run() {
+        getSpectrum();
     }
     
     public Tone[] getSpectrum() {
@@ -74,12 +80,12 @@ public class FFT {
      * @param frequency the frequency to search
      * @return The amplitude of the searched frequency
      */    
-    private double transform(double[] a,int frequency) {
+    private float transform(float[] a,int frequency) {
         if(a.length==1) {
             return a[0];
         }
-        double[] even = new double[a.length/2];
-        double[] odd = new double[a.length/2];
+        float[] even = new float[a.length/2];
+        float[] odd = new float[a.length/2];
         int m = a.length/2;
 
         for(int i=0;i<m;i++) {
@@ -87,9 +93,9 @@ public class FFT {
             even[i] = a[ii];
             odd[i] = a[ii+1];
         }
-        double evenResult = transform(even,frequency);
-        double oddResult = transform(odd,frequency);
-        double res = 0.5*evenResult+0.5*oddResult*(Math.cos((-2*Math.PI*frequency)/a.length));
+        float evenResult = transform(even,frequency);
+        float oddResult = transform(odd,frequency);
+        float res = (float) (0.5*evenResult+0.5*oddResult*(Math.cos((-2*Math.PI*frequency)/a.length)));
 
         return res;
     }

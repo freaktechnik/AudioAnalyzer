@@ -14,16 +14,20 @@ public class AudioRecorderThread  implements Runnable
     byte[] buffer = new byte[10000];
     boolean record = false;
     Tone[] freq;
-    public FFT fourier;
     int samplelength;
+    int startf;
+    int endf;
     
     TargetDataLine targetDataLine;
     ByteArrayOutputStream data;
     
+    TransformedEventListener listener;
+    
     AudioRecorderThread(int s,int e, int l) {
         data = new ByteArrayOutputStream();
         samplelength = l;
-        fourier = new FFT(s,e,l);
+        startf = s;
+        endf = e;
     }
     
     /**
@@ -45,8 +49,11 @@ public class AudioRecorderThread  implements Runnable
                 if(count > 0) {
                     data.write(buffer, 0, count);
                     if(data.size()>=samplelength) {
-                        fourier.setInput(data);
-                        fourier.getSpectrum();
+                        FFT fourier = new FFT(startf,endf,samplelength,data);
+                        Thread fourierThread = new Thread(fourier);
+                        fourier.addEventListener(listener);
+                        fourierThread.start();
+                        
                         data.reset();
                     }
                 }
@@ -68,6 +75,10 @@ public class AudioRecorderThread  implements Runnable
     public void setT(TargetDataLine t, Tone[] a) {
         targetDataLine = t;
         freq = a;
+    }
+    
+    public void setEventTarget(TransformedEventListener listener) {
+        this.listener = listener;
     }
     
     /**
