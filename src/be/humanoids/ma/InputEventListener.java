@@ -9,6 +9,6 @@ import java.util.EventObject;
  *
  * @author Martin
  */
-public interface TransformedEventListener {
-    public void handleTransformEvent(EventObject e,Tone[] freq);
+public interface InputEventListener {
+    public void handleInputEvent(EventObject e,float[] by);
 }

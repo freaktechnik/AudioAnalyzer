@@ -2,8 +2,12 @@
 package be.humanoids.ma;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.sound.sampled.TargetDataLine;
 /**
  * The audio recorder thread collects the input from the soundcard, byte by byte.
@@ -11,6 +15,39 @@ import javax.sound.sampled.TargetDataLine;
  */
 public class AudioRecorderThread  implements Runnable
 {
+    // Event stuff
+    private List _listeners = new ArrayList();
+    public synchronized void addEventListener(InputEventListener listener) {
+        _listeners.add(listener);
+    }
+    public synchronized void removeEventListener(InputEventListener listener) {
+        _listeners.remove(listener);
+    }
+
+    private synchronized void fireEvent(ByteArrayOutputStream a) {
+        if(a!=null) {
+            float[] sound = new float[a.size()];
+            ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
+            for(int i=0;i<samplelength;i++) {
+                float actual = (float)b.read();
+                if(actual>128)
+                    actual-=256;
+                sound[i] = actual;
+            }
+
+            FFT fourier = new FFT(startf,endf,samplelength,sound);
+            Thread fourierThread = new Thread(fourier);
+            fourier.addEventListener(telistener);
+            fourierThread.start();
+
+            InputEvent event = new InputEvent(this);
+            Iterator i = _listeners.iterator();
+            while(i.hasNext()) {
+                ((InputEventListener) i.next()).handleInputEvent(event,sound);
+            }
+        }
+    }
+
     byte[] buffer = new byte[10000];
     boolean record = false;
     Tone[] freq;
@@ -21,7 +58,7 @@ public class AudioRecorderThread  implements Runnable
     TargetDataLine targetDataLine;
     ByteArrayOutputStream data;
     
-    TransformedEventListener listener;
+    TransformedEventListener telistener;
     
     AudioRecorderThread(int s,int e, int l) {
         data = new ByteArrayOutputStream();
@@ -48,12 +85,8 @@ public class AudioRecorderThread  implements Runnable
                 int count = targetDataLine.read(buffer, 0, buffer.length);
                 if(count > 0) {
                     data.write(buffer, 0, count);
-                    if(data.size()>=samplelength) {
-                        FFT fourier = new FFT(startf,endf,samplelength,data);
-                        Thread fourierThread = new Thread(fourier);
-                        fourier.addEventListener(listener);
-                        fourierThread.start();
-                        
+                    fireEvent(data);
+                    if(data.size()>=samplelength) {                        
                         data.reset();
                     }
                 }
@@ -78,7 +111,7 @@ public class AudioRecorderThread  implements Runnable
     }
     
     public void setEventTarget(TransformedEventListener listener) {
-        this.listener = listener;
+        this.telistener = listener;
     }
     
     /**

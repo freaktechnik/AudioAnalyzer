@@ -1,23 +1,49 @@
 package be.humanoids.ma;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 /**
  * Creates a simple visualizer out of a Tone array.
  * @author Martin
  */
 public class Visualizer {
-    Tone[] freq;
-    float[] data;
+    // Event stuff
+    private List _listeners = new ArrayList();
+    public synchronized void addEventListener(VisualizerEventListener listener) {
+        _listeners.add(listener);
+    }
+    public synchronized void removeEventListener(VisualizerEventListener listener) {
+        _listeners.remove(listener);
+    }
+
+    private synchronized void fireEvent() {
+        VisualizerEvent event = new VisualizerEvent(this);
+        Iterator i = _listeners.iterator();
+        while(i.hasNext()) {
+            ((VisualizerEventListener) i.next()).handleVisualizerEvent(event);
+        }
+    }
+    
+    
+    private Tone[] freq;
+    private float[] data;
     BufferedImage img;
+    private boolean type; // false=waveform, true=fft
+    static String WAVEFORM = "Waveform";
+    static String FFT = "Transform";
     
     Visualizer(Tone[] frequencies) {
         freq = frequencies;
         img = new BufferedImage(freq.length/50,250,BufferedImage.TYPE_INT_RGB);
+        type = true;
     }
     
     Visualizer(float[] by) {
         data = by;
         img = new BufferedImage(data.length,250,BufferedImage.TYPE_INT_RGB);
+        type = false;
     }
     
     public BufferedImage createTransformImage() {
@@ -48,6 +74,7 @@ public class Visualizer {
             }
         }
         
+        fireEvent();
         return img;
     }
     
@@ -65,6 +92,7 @@ public class Visualizer {
             img.setRGB(i,250-height-1 ,col);
         }
         
+        fireEvent();
         return img;
     }
     
@@ -82,9 +110,31 @@ public class Visualizer {
     
     public void updateFrequencies(Tone[] f) {
         freq = f;
+        if(type)
+            createImage();
     }
     
     public void updateData(float[] a) {
         data = a;
+        if(!type)
+            createImage();
+    }
+    
+    public BufferedImage createImage() {
+        if(type)
+            return this.createTransformImage();
+        else
+            return this.createWaveformImage();
+    }
+    
+    public void toggleType() {
+        type = !type;
+    }
+    
+    public String getType() {
+        if(type)
+            return Visualizer.FFT;
+        else
+            return Visualizer.WAVEFORM;
     }
 }

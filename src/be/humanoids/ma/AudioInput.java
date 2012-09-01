@@ -23,9 +23,9 @@ public class AudioInput {
   Thread thread;
   DataLine.Info dataLineInfo;
   Tone[] freq;
-  int endf = 18000;
-  int startf = 50;
   int samplelength = (int)Math.pow(2,10);
+  int startf = 50;
+  int endf = samplelength; // since the fft only allows this max
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();

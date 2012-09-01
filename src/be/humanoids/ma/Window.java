@@ -9,15 +9,18 @@ import javax.swing.*;
  * the main Window Object, is a singleton.
  * @author Martin
  */
-public class Window extends JFrame implements TransformedEventListener {
+public class Window extends JFrame implements TransformedEventListener,InputEventListener,VisualizerEventListener {
     private static Window singletonWindow;
     private boolean recording = false;
     private JButton record;
+    private JRadioButton waveform;
+    private JRadioButton transform;
+            
+            
     AudioInput a;
     Visualizer visual;
     ImageIcon img;
     private JLabel label;
-    String visualizerType;
     private Timer transformTime;
     
     private Window() {     
@@ -39,21 +42,24 @@ public class Window extends JFrame implements TransformedEventListener {
         JPanel buttonPanel = new JPanel( );
         buttonPanel.add(record);
         
-        JRadioButton waveform = new JRadioButton("Waveform");
+        waveform = new JRadioButton(Visualizer.WAVEFORM);
         waveform.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setVisualizer("Waveform");
+                setVisualizer(Visualizer.WAVEFORM);
             }
         });
-        JRadioButton transform = new JRadioButton("Transform");
+        transform = new JRadioButton(Visualizer.FFT);
         transform.setSelected(true);
         transform.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setVisualizer("Transform");
+                setVisualizer(Visualizer.FFT);
             }
         });
+        
+        waveform.setEnabled(false);
+        transform.setEnabled(false);
 
         ButtonGroup visualizer = new ButtonGroup();
         visualizer.add(waveform);
@@ -79,10 +85,14 @@ public class Window extends JFrame implements TransformedEventListener {
     public void setAudioInput(AudioInput ai) {
         a = ai;
         visual = new Visualizer(a.freq);
-        visualizerType = "Transform";
+
         record.setEnabled(true);
+        waveform.setEnabled(true);
+        transform.setEnabled(true);
         
         a.arthread.setEventTarget(this);
+        a.arthread.addEventListener(this);
+        visual.addEventListener(this);
     }
     
     private void toggleRecording() {
@@ -105,12 +115,7 @@ public class Window extends JFrame implements TransformedEventListener {
     }
     
     private void getVisualizer() {
-        if("Waveform".equals(visualizerType)) {
-            img = new ImageIcon(visual.createWaveformImage());
-        }
-        else {
-            img = new ImageIcon(visual.createTransformImage());
-        }
+        img = new ImageIcon(visual.img);
         label.setIcon(img);
         if(transformTime.running()) {
             transformTime.stop();
@@ -120,14 +125,23 @@ public class Window extends JFrame implements TransformedEventListener {
     }
     
     private void setVisualizer(String type) {
-        visualizerType = type;
+        if(!type.equals(visual.getType()))
+            visual.toggleType();
     }
     
     @Override
-    public void handleTransformEvent(EventObject e, Tone[] freq, float[] d) {
+    public void handleTransformEvent(EventObject e, Tone[] freq) {
         a.freq = freq;
         visual.updateFrequencies(freq);
+    }
+    
+    @Override
+    public void handleInputEvent(EventObject e,float[] d) {
         visual.updateData(d);
+    }
+    
+    @Override
+    public void handleVisualizerEvent(EventObject e) {
         getVisualizer();
     }
     

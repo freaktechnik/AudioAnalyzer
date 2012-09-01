@@ -4,8 +4,6 @@
  */
 package be.humanoids.ma;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,11 +21,11 @@ public class FFT implements Runnable {
         _listeners.remove(listener);
     }
 
-    private synchronized void fireEvent(Tone[] freq, float[] d) {
+    private synchronized void fireEvent(Tone[] freq) {
         TransformedEvent event = new TransformedEvent(this);
         Iterator i = _listeners.iterator();
         while(i.hasNext()) {
-            ((TransformedEventListener) i.next()).handleTransformEvent(event,freq,d);
+            ((TransformedEventListener) i.next()).handleTransformEvent(event,freq);
         }
     }
 
@@ -36,7 +34,7 @@ public class FFT implements Runnable {
     int samplelength;
     int startf;
     
-    public FFT(int startf,int endf, int length, ByteArrayOutputStream a) {
+    public FFT(int startf,int endf, int length, float[] a) {
         freq = new Tone[endf-startf];
         for(int i= 0;i<endf-startf;i++) {
             freq[i] = new Tone(startf+i);
@@ -47,18 +45,8 @@ public class FFT implements Runnable {
         setInput(a);
     }
     
-    final void setInput(ByteArrayOutputStream a) {
-        // needs a wraparound like in Visualiter.java/createWaveformImage
-        if(a!=null) {
-            ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
-            for(int i=0;i<samplelength;i++) {
-                float actual = (float)b.read();
-                if(actual>128)
-                    actual-=256;
-                data[i] = actual;
-            }
-
-        }
+    final void setInput(float[] a) {
+        data = a;
     }
     
     @Override
@@ -70,7 +58,7 @@ public class FFT implements Runnable {
         for(int i=0;i<freq.length;i++) {
             freq[i].setAmplitude(transform(data,startf+i));
         }
-        fireEvent(freq,data);
+        fireEvent(freq);
         return freq;
     }
     
