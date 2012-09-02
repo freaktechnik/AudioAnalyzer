@@ -25,26 +25,24 @@ public class AudioRecorderThread  implements Runnable
     }
 
     private synchronized void fireEvent(ByteArrayOutputStream a) {
-        if(a!=null) {
-            float[] sound = new float[a.size()];
-            ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
-            for(int i=0;i<samplelength;i++) {
-                float actual = (float)b.read();
-                if(actual>128)
-                    actual-=256;
-                sound[i] = actual;
-            }
+        float[] sound = new float[a.size()];
+        ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
+        for(int i=0;i<samplelength;i++) {
+            float actual = (float)b.read();
+            if(actual>128)
+                actual-=256;
+            sound[i] = actual;
+        }
 
-            FFT fourier = new FFT(startf,endf,samplelength,sound);
-            Thread fourierThread = new Thread(fourier);
-            fourier.addEventListener(telistener);
-            fourierThread.start();
+        FFT fourier = new FFT(startf,endf,samplelength,sound);
+        Thread fourierThread = new Thread(fourier);
+        fourier.addEventListener(telistener);
+        fourierThread.start();
 
-            InputEvent event = new InputEvent(this);
-            Iterator i = _listeners.iterator();
-            while(i.hasNext()) {
-                ((InputEventListener) i.next()).handleInputEvent(event,sound);
-            }
+        InputEvent event = new InputEvent(this);
+        Iterator i = _listeners.iterator();
+        while(i.hasNext()) {
+            ((InputEventListener) i.next()).handleInputEvent(event,sound);
         }
     }
 

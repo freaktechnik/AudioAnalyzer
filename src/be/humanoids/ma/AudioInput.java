@@ -29,8 +29,6 @@ public class AudioInput {
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();
-        arthread = new AudioRecorderThread(startf,endf,samplelength);
-        thread = new Thread(arthread);
         dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat.getAudioFormat());
         freq = new Tone[endf-startf];
     }
@@ -45,6 +43,8 @@ public class AudioInput {
                 targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
                 targetDataLine.open(audioFormat.getAudioFormat());
             }
+                arthread = new AudioRecorderThread(startf,endf,samplelength);
+                thread = new Thread(arthread);
                 arthread.setT(targetDataLine,freq);
             
         } catch(Exception e) {

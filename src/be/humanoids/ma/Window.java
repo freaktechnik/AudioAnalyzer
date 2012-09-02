@@ -84,14 +84,12 @@ public class Window extends JFrame implements TransformedEventListener,InputEven
     
     public void setAudioInput(AudioInput ai) {
         a = ai;
-        visual = new Visualizer(a.freq);
+        visual = new Visualizer(this.getWidth(),this.getHeight());
 
         record.setEnabled(true);
         waveform.setEnabled(true);
         transform.setEnabled(true);
-        
-        a.arthread.setEventTarget(this);
-        a.arthread.addEventListener(this);
+
         visual.addEventListener(this);
     }
     
@@ -100,9 +98,12 @@ public class Window extends JFrame implements TransformedEventListener,InputEven
             if(recording) {
                 a.stopRecording();
                 record.setText("Start");
-                record.setEnabled(false); // due to a bug in starting again with threads
+                //record.setEnabled(false); // due to a bug in starting again with threads
             }
             else {
+                a.startRecording();
+                a.arthread.setEventTarget(this);
+                a.arthread.addEventListener(this);
                 a.resumeRecording();
                 record.setText("Stop");
                 visual.clearImage();
@@ -114,8 +115,8 @@ public class Window extends JFrame implements TransformedEventListener,InputEven
         }
     }
     
-    private void getVisualizer() {
-        img = new ImageIcon(visual.img);
+    private void getVisualizer(VisualizerEvent e) {
+        img = new ImageIcon(e.img);
         label.setIcon(img);
         if(transformTime.running()) {
             transformTime.stop();
@@ -141,8 +142,8 @@ public class Window extends JFrame implements TransformedEventListener,InputEven
     }
     
     @Override
-    public void handleVisualizerEvent(EventObject e) {
-        getVisualizer();
+    public void handleVisualizerEvent(VisualizerEvent e) {
+        getVisualizer(e);
     }
     
 }

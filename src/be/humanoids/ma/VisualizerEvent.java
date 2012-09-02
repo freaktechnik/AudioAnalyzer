@@ -4,12 +4,16 @@
  */
 package be.humanoids.ma;
 
+import java.awt.Image;
+
 /**
  *
  * @author Martin
  */
 public class VisualizerEvent extends java.util.EventObject {
-    public VisualizerEvent(Object source) {
+    Image img;
+    public VisualizerEvent(Object source, Image i) {
         super(source);
+        img = i;
     }
 }

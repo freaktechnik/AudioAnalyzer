@@ -19,7 +19,7 @@ public class Visualizer {
     }
 
     private synchronized void fireEvent() {
-        VisualizerEvent event = new VisualizerEvent(this);
+        VisualizerEvent event = new VisualizerEvent(this,img);
         Iterator i = _listeners.iterator();
         while(i.hasNext()) {
             ((VisualizerEventListener) i.next()).handleVisualizerEvent(event);
@@ -31,46 +31,42 @@ public class Visualizer {
     private float[] data;
     BufferedImage img;
     private boolean type; // false=waveform, true=fft
+    private boolean ready;
     static String WAVEFORM = "Waveform";
     static String FFT = "Transform";
     
-    Visualizer(Tone[] frequencies) {
-        freq = frequencies;
-        img = new BufferedImage(freq.length/50,250,BufferedImage.TYPE_INT_RGB);
-        type = true;
+    Visualizer(int width, int height) {
+
+        ready = false;
+        img = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
     }
     
-    Visualizer(float[] by) {
-        data = by;
-        img = new BufferedImage(data.length,250,BufferedImage.TYPE_INT_RGB);
-        type = false;
-    }
-    
-    public BufferedImage createTransformImage() {
-        if(img.getWidth()!=freq.length/50)
-            img = new BufferedImage(freq.length/50,250,BufferedImage.TYPE_INT_RGB);
+    private BufferedImage createTransformImage() {
         clearImage();
         int r = 0;
         int g = 255;
         int b = 0;
         int col = (r << 16) | (g << 8) | b; // green
         
-        // make sure it gets scaled, so everything fits into the graphicsfield
+        // calculate required compression on x-axis
+        int compression = (int)Math.ceil(img.getWidth()/freq.length);
+        
+        // make sure it gets scaled, so everything fits into the graphicsfield (y-axis)
         float maxAmp = 0;
         for(int f=0;f<freq.length;f++) {
-            if(freq[f].getAplitude()>maxAmp)
-                maxAmp = freq[f].getAplitude();
+            if(freq[f].getAmplitude()>maxAmp)
+                maxAmp = freq[f].getAmplitude();
         }
         double factor = maxAmp/250;
         
-        for(int f=0;f<freq.length/50;f++) {
-            int height = 0;
-            for(int j=0;j<50;j++) {
-                height = (int) (height + Math.floor(freq[f*50+j].getAplitude()/factor));
+        for(int f=0;f<img.getWidth();f++) {
+            int fheight = 0;
+            for(int j=0;j<compression;j++) {
+                fheight = (int) (fheight + Math.floor(freq[f*compression+j].getAmplitude()/factor));
             }
-            height = height/50;
-            for(int y = 1;y<=height;y++) {
-                img.setRGB(f, 250-y, col);
+            fheight = fheight/compression;
+            for(int y = 1;y<=fheight;y++) {
+                img.setRGB(f, img.getHeight()-y, col);
             }
         }
         
@@ -78,18 +74,24 @@ public class Visualizer {
         return img;
     }
     
-    public BufferedImage createWaveformImage() {
-        if(img.getWidth()!=data.length)
-            img = new BufferedImage(data.length,250,BufferedImage.TYPE_INT_RGB);
+    private BufferedImage createWaveformImage() {
         clearImage();
         int r = 0;
         int g = 0;
         int b = 255;
         int col = (r << 16) | (g << 8) | b; // blue
         
-        for(int i=0;i<data.length;i++) {
-            int height = (int)(Math.floor(data[i]+128)/1.024);
-            img.setRGB(i,250-height-1 ,col);
+        // calculate required compression on x-axis
+        int compression = (int)Math.ceil(img.getWidth()/data.length);
+        
+        for(int i=0;i<img.getWidth();i++) {
+            int fheight = 0;
+            for(int j=0;j<compression;j++) {
+                fheight = (int)(fheight + Math.floor(freq[i*compression+j].getAmplitude()));
+            }
+            fheight = fheight/compression;
+            int wheight = (int)(Math.floor(fheight+128)/1.024);
+            img.setRGB(i,img.getHeight()-wheight-1 ,col);
         }
         
         fireEvent();
@@ -110,21 +112,28 @@ public class Visualizer {
     
     public void updateFrequencies(Tone[] f) {
         freq = f;
+        if(!ready)
+            ready = true;
         if(type)
             createImage();
     }
     
     public void updateData(float[] a) {
         data = a;
+        if(!ready)
+            ready = true;
         if(!type)
             createImage();
     }
     
     public BufferedImage createImage() {
-        if(type)
-            return this.createTransformImage();
-        else
-            return this.createWaveformImage();
+        if(ready) {
+            if(type)
+                return this.createTransformImage();
+            else
+                return this.createWaveformImage();
+        }
+        return null;
     }
     
     public void toggleType() {
