@@ -11,9 +11,7 @@ import java.awt.Image;
  * @author Martin
  */
 public class VisualizerEvent extends java.util.EventObject {
-    Image img;
-    public VisualizerEvent(Object source, Image i) {
+    public VisualizerEvent(Object source) {
         super(source);
-        img = i;
     }
 }

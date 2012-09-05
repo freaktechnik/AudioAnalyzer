@@ -1,5 +1,6 @@
 package be.humanoids.ma;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,7 +20,7 @@ public class Visualizer {
     }
 
     private synchronized void fireEvent() {
-        VisualizerEvent event = new VisualizerEvent(this,img);
+        VisualizerEvent event = new VisualizerEvent(this);
         Iterator i = _listeners.iterator();
         while(i.hasNext()) {
             ((VisualizerEventListener) i.next()).handleVisualizerEvent(event);
@@ -29,14 +30,13 @@ public class Visualizer {
     
     private Tone[] freq;
     private float[] data;
-    BufferedImage img;
+    private BufferedImage img;
     private boolean type; // false=waveform, true=fft
     private boolean ready;
     static String WAVEFORM = "Waveform";
     static String FFT = "Transform";
     
     Visualizer(int width, int height) {
-
         ready = false;
         img = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
     }
@@ -49,15 +49,19 @@ public class Visualizer {
         int col = (r << 16) | (g << 8) | b; // green
         
         // calculate required compression on x-axis
-        int compression = (int)Math.ceil(img.getWidth()/freq.length);
+        int compression = 1;
+        if(freq.length>2*img.getWidth()) {
+            compression = (int)Math.floor(freq.length/img.getWidth());
+        }
         
         // make sure it gets scaled, so everything fits into the graphicsfield (y-axis)
-        float maxAmp = 0;
-        for(int f=0;f<freq.length;f++) {
-            if(freq[f].getAmplitude()>maxAmp)
+        float maxAmp = 1000;
+        /*for(int f=0;f<freq.length;f++) {
+            if(freq[f].getAmplitude()>maxAmp) {
                 maxAmp = freq[f].getAmplitude();
-        }
-        double factor = maxAmp/250;
+            }
+        }*/
+        double factor = maxAmp/img.getHeight();
         
         for(int f=0;f<img.getWidth();f++) {
             int fheight = 0;
@@ -82,16 +86,21 @@ public class Visualizer {
         int col = (r << 16) | (g << 8) | b; // blue
         
         // calculate required compression on x-axis
-        int compression = (int)Math.ceil(img.getWidth()/data.length);
+        int compression = 1;
+        if(data.length>2*img.getWidth()) {
+            compression = (int)Math.floor(data.length/img.getWidth());
+        }
+        
+        double factor = 256/img.getHeight();
         
         for(int i=0;i<img.getWidth();i++) {
             int fheight = 0;
             for(int j=0;j<compression;j++) {
-                fheight = (int)(fheight + Math.floor(freq[i*compression+j].getAmplitude()));
+                fheight = (int)(fheight + Math.floor(data[i*compression+j]));
             }
             fheight = fheight/compression;
-            int wheight = (int)(Math.floor(fheight+128)/1.024);
-            img.setRGB(i,img.getHeight()-wheight-1 ,col);
+            int wheight = (int)(Math.floor((fheight+128)*factor));
+            img.setRGB(i,Math.abs(img.getHeight()-wheight) ,col);
         }
         
         fireEvent();
@@ -112,16 +121,18 @@ public class Visualizer {
     
     public void updateFrequencies(Tone[] f) {
         freq = f;
-        if(!ready)
+        if(!ready) {
             ready = true;
+        }
         if(type)
             createImage();
     }
     
     public void updateData(float[] a) {
         data = a;
-        if(!ready)
+        if(!ready) {
             ready = true;
+        }
         if(!type)
             createImage();
     }
@@ -136,8 +147,22 @@ public class Visualizer {
         return null;
     }
     
+    public Image getImage() {
+        return img;
+    }
+    
     public void toggleType() {
         type = !type;
+    }
+    
+    public void setType(String t) {
+        if(t.equals(Visualizer.FFT)) {
+            type = true;
+        }
+        else if(t.equals(Visualizer.WAVEFORM)) {
+            type = false;
+        }
+        
     }
     
     public String getType() {

@@ -25,12 +25,11 @@ public class AudioInput {
   Tone[] freq;
   int samplelength = (int)Math.pow(2,10);
   int startf = 50;
-  int endf = samplelength; // since the fft only allows this max
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();
         dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat.getAudioFormat());
-        freq = new Tone[endf-startf];
+        freq = new Tone[samplelength-startf];
     }
     
     /**
@@ -43,7 +42,7 @@ public class AudioInput {
                 targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
                 targetDataLine.open(audioFormat.getAudioFormat());
             }
-                arthread = new AudioRecorderThread(startf,endf,samplelength);
+                arthread = new AudioRecorderThread(startf,samplelength);
                 thread = new Thread(arthread);
                 arthread.setT(targetDataLine,freq);
             

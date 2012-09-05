@@ -31,17 +31,13 @@ public class FFT implements Runnable {
 
     private Tone[] freq;
     private float[] data;
-    int samplelength;
-    int startf;
     
-    public FFT(int startf,int endf, int length, float[] a) {
-        freq = new Tone[endf-startf];
-        for(int i= 0;i<endf-startf;i++) {
-            freq[i] = new Tone(startf+i);
+    public FFT(float[] a) {
+        freq = new Tone[a.length];
+        for(int i= 0;i<a.length;i++) {
+            freq[i] = new Tone(i);
         }
-        this.startf = startf;
-        data = new float[length];
-        samplelength = length;
+        data = new float[a.length];
         setInput(a);
     }
     
@@ -56,7 +52,7 @@ public class FFT implements Runnable {
     
     public Tone[] getSpectrum() {
         for(int i=0;i<freq.length;i++) {
-            freq[i].setAmplitude(transform(data,startf+i));
+            freq[i].setAmplitude(transform(data,i));
         }
         fireEvent(freq);
         return freq;
@@ -72,9 +68,9 @@ public class FFT implements Runnable {
         if(a.length==1) {
             return a[0];
         }
-        float[] even = new float[a.length/2];
-        float[] odd = new float[a.length/2];
         int m = a.length/2;
+        float[] even = new float[m];
+        float[] odd = new float[m];
 
         for(int i=0;i<m;i++) {
             int ii = 2*i;
@@ -83,8 +79,15 @@ public class FFT implements Runnable {
         }
         float evenResult = transform(even,frequency);
         float oddResult = transform(odd,frequency);
-        float res = (float) (0.5*evenResult+0.5*oddResult*(Math.cos((-2*Math.PI*frequency)/a.length)));
+        float res = (float) (evenResult+oddResult*(Math.cos((-2*Math.PI*frequency)/a.length)));
 
         return res;
+    }
+    
+    private Tone[] transform(float[] a) {
+        Tone[] d = new Tone[a.length];
+        int max = (int)(Math.log(a.length)/Math.log(2));
+        
+        return d;
     }
 }

@@ -15,8 +15,21 @@ import javax.sound.sampled.TargetDataLine;
  */
 public class AudioRecorderThread  implements Runnable
 {
+    byte[] buffer = new byte[10000];
+    boolean record = false;
+    Tone[] freq;
+    int samplelength;
+    int startf;
+    
+    TargetDataLine targetDataLine;
+    ByteArrayOutputStream data;
+    
+    TransformedEventListener telistener;
+    
     // Event stuff
     private List _listeners = new ArrayList();
+    private int skipped = 0;
+    private int goal;
     public synchronized void addEventListener(InputEventListener listener) {
         _listeners.add(listener);
     }
@@ -27,17 +40,21 @@ public class AudioRecorderThread  implements Runnable
     private synchronized void fireEvent(ByteArrayOutputStream a) {
         float[] sound = new float[a.size()];
         ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
-        for(int i=0;i<samplelength;i++) {
+        for(int i=0;i<sound.length;i++) {
             float actual = (float)b.read();
             if(actual>128)
                 actual-=256;
             sound[i] = actual;
         }
-
-        FFT fourier = new FFT(startf,endf,samplelength,sound);
-        Thread fourierThread = new Thread(fourier);
-        fourier.addEventListener(telistener);
-        fourierThread.start();
+        
+        skipped+=sound.length;
+        if(skipped>=goal) {
+            FFT fourier = new FFT(sound);
+            Thread fourierThread = new Thread(fourier);
+            fourier.addEventListener(telistener);
+            fourierThread.start();
+            skipped=0;
+        }
 
         InputEvent event = new InputEvent(this);
         Iterator i = _listeners.iterator();
@@ -45,24 +62,11 @@ public class AudioRecorderThread  implements Runnable
             ((InputEventListener) i.next()).handleInputEvent(event,sound);
         }
     }
-
-    byte[] buffer = new byte[10000];
-    boolean record = false;
-    Tone[] freq;
-    int samplelength;
-    int startf;
-    int endf;
     
-    TargetDataLine targetDataLine;
-    ByteArrayOutputStream data;
-    
-    TransformedEventListener telistener;
-    
-    AudioRecorderThread(int s,int e, int l) {
+    AudioRecorderThread(int s, int l) {
         data = new ByteArrayOutputStream();
         samplelength = l;
         startf = s;
-        endf = e;
     }
     
     /**
@@ -83,10 +87,17 @@ public class AudioRecorderThread  implements Runnable
                 int count = targetDataLine.read(buffer, 0, buffer.length);
                 if(count > 0) {
                     data.write(buffer, 0, count);
-                    fireEvent(data);
-                    if(data.size()>=samplelength) {                        
+                    if(data.size()>samplelength) {                        
+                        byte[] b = data.toByteArray();
+                        byte[] c = new byte[samplelength];
+                        int off = data.size()-samplelength;
+                        for(int i=0;i<samplelength;++i) {
+                            c[i] = b[off+i];
+                        }
                         data.reset();
+                        data.write(c);
                     }
+                    fireEvent(data);
                 }
             }
             data.close();
@@ -106,6 +117,8 @@ public class AudioRecorderThread  implements Runnable
     public void setT(TargetDataLine t, Tone[] a) {
         targetDataLine = t;
         freq = a;
+        goal = (int)Math.floor(targetDataLine.getFormat().getFrameRate()/40);
+        System.out.println(goal);
     }
     
     public void setEventTarget(TransformedEventListener listener) {
