@@ -10,6 +10,12 @@ public class Tone {
     
     public Tone(float f) {
         frequency = f;
+        amplitude = 0;
+    }
+    
+    public Tone(float f, float amp) {
+        frequency = f;
+        amplitude = amp;
     }
     
     /**

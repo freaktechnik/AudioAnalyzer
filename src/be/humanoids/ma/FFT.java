@@ -51,15 +51,13 @@ public class FFT implements Runnable {
     }
     
     public Tone[] getSpectrum() {
-        for(int i=0;i<freq.length;i++) {
-            freq[i].setAmplitude(transform(data,i));
-        }
+        freq = transform(data);
         fireEvent(freq);
         return freq;
     }
     
     /**
-     * Recursive implementation of a FFT
+     * Recursive implementation of a FFT (wrong, don't use....)
      * @param a the Datapoints of the Audiosample
      * @param frequency the frequency to search
      * @return The amplitude of the searched frequency
@@ -84,10 +82,63 @@ public class FFT implements Runnable {
         return res;
     }
     
+    /**
+     * Non recursive calculation of the FFT. Returning the amplitude of each frequency.
+     * @param a the data to transform
+     * @return frequency spectrum witht he length of a
+     */
     private Tone[] transform(float[] a) {
-        Tone[] d = new Tone[a.length];
+        if(a.length%2!=0)
+            return null;
+        
+        int m = a.length/2;
+        
+        // bit reversal sorting by the array indexes
+        // first element in a half stays, the other are swapped
+        for(int i=1;i<m/2;++i) {
+            a = swapPositions(a,i,m-i);
+            a = swapPositions(a,i+m,a.length-i);
+        }
+        
+        float[] re = a;
+        float[] im = new float[a.length];
+        for(int i = 0;i<im.length;++i) {
+            im[i]=0;
+        }
         int max = (int)(Math.log(a.length)/Math.log(2));
         
-        return d;
+        for(int i=0;i<max;++i) {
+            int p = (int) Math.pow(2,i);
+            int adp = a.length*2/p;
+            for(int j=0;j<adp;++j) {
+                int z = 0;
+                int d = m/p;
+                for(int k = 0;k<p;++k) {
+                    float arg = (float) (-2*Math.PI*k*z)/a.length;
+                    float reodd = (float) (Math.cos(arg)*re[k+p]);
+                    float imodd = (float) (Math.sin(arg)*im[k+p]);
+                    
+                    re[k+p] = re[k]-reodd;
+                    im[k+p] = im[k]-imodd;
+                    
+                    re[k] += reodd;
+                    im[k] += imodd;
+                    z+=d;
+                }
+            }
+        }
+
+        Tone[] f = new Tone[a.length];
+        for(int i=0;i<a.length;++i) {
+            f[i] = new Tone(i*44100/a.length,(float)Math.sqrt(Math.pow(re[i],2)+Math.pow(im[i],2)));
+        }
+        return f;
+    }
+
+    private float[] swapPositions(float[] array,int i,int j) {
+        float b = array[i];
+        array[i] = array[j];
+        array[j] = b;
+        return array;
     }
 }

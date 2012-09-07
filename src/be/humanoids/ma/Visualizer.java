@@ -33,11 +33,13 @@ public class Visualizer {
     private BufferedImage img;
     private boolean type; // false=waveform, true=fft
     private boolean ready;
+    private boolean imgready;
     static String WAVEFORM = "Waveform";
     static String FFT = "Transform";
     
     Visualizer(int width, int height) {
         ready = false;
+        imgready = true;
         img = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
     }
     
@@ -55,22 +57,25 @@ public class Visualizer {
         }
         
         // make sure it gets scaled, so everything fits into the graphicsfield (y-axis)
-        float maxAmp = 1000;
-        /*for(int f=0;f<freq.length;f++) {
+        float maxAmp = 0;
+        int maxAmpi = 0;
+        for(int f=0;f<freq.length;f++) {
             if(freq[f].getAmplitude()>maxAmp) {
                 maxAmp = freq[f].getAmplitude();
+                maxAmpi = f;
             }
-        }*/
+        }
+        System.out.println(freq[maxAmpi].getFrequency());
         double factor = maxAmp/img.getHeight();
         
         for(int f=0;f<img.getWidth();f++) {
             int fheight = 0;
             for(int j=0;j<compression;j++) {
-                fheight = (int) (fheight + Math.floor(freq[f*compression+j].getAmplitude()/factor));
+                fheight += (int) ( Math.floor(freq[f*compression+j].getAmplitude()/factor));
             }
             fheight = fheight/compression;
-            for(int y = 1;y<=fheight;y++) {
-                img.setRGB(f, img.getHeight()-y, col);
+            for(int y = 1;y<fheight;y++) {
+                img.setRGB(f, Math.abs(img.getHeight()-y), col);
             }
         }
         
@@ -121,7 +126,7 @@ public class Visualizer {
     
     public void updateFrequencies(Tone[] f) {
         freq = f;
-        if(!ready) {
+        if(!ready&&imgready) {
             ready = true;
         }
         if(type)
@@ -130,7 +135,7 @@ public class Visualizer {
     
     public void updateData(float[] a) {
         data = a;
-        if(!ready) {
+        if(!ready&&imgready) {
             ready = true;
         }
         if(!type)
