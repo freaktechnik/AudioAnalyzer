@@ -23,7 +23,7 @@ public class AudioInput {
   Thread thread;
   DataLine.Info dataLineInfo;
   Tone[] freq;
-  int samplelength = (int)Math.pow(2,10);
+  int samplelength = (int)Math.pow(2,15);
   int startf = 50;
     
     AudioInput() {

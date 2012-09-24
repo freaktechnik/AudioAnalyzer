@@ -34,8 +34,8 @@ public class Visualizer {
     private boolean type; // false=waveform, true=fft
     private boolean ready;
     private boolean imgready;
-    static String WAVEFORM = "Waveform";
-    static String FFT = "Transform";
+    static final String WAVEFORM = "Waveform";
+    static final String FFT = "Transform";
     
     Visualizer(int width, int height) {
         ready = false;
@@ -65,15 +65,16 @@ public class Visualizer {
                 maxAmpi = f;
             }
         }
-        System.out.println(freq[maxAmpi].getFrequency());
-        double factor = maxAmp/img.getHeight();
+        System.out.println(freq[maxAmpi].getAbsoluteName());
+        double factor = img.getHeight()/maxAmp;
         
         for(int f=0;f<img.getWidth();f++) {
-            int fheight = 0;
-            for(int j=0;j<compression;j++) {
-                fheight += (int) ( Math.floor(freq[f*compression+j].getAmplitude()/factor));
+            float maxAmph = 0;
+            for(int i = f*compression;f<(f+1)*compression;f++) {
+                if(freq[i].getAmplitude()>maxAmph)
+                    maxAmph=freq[i].getAmplitude();
             }
-            fheight = fheight/compression;
+            int fheight= (int) (maxAmph/factor);
             for(int y = 1;y<fheight;y++) {
                 img.setRGB(f, Math.abs(img.getHeight()-y), col);
             }

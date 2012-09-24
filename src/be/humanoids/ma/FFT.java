@@ -51,6 +51,7 @@ public class FFT implements Runnable {
     }
     
     public Tone[] getSpectrum() {
+        data = padData(data);
         freq = transform(data);
         fireEvent(freq);
         return freq;
@@ -130,7 +131,7 @@ public class FFT implements Runnable {
 
         Tone[] f = new Tone[a.length];
         for(int i=0;i<a.length;++i) {
-            f[i] = new Tone(i*44100/a.length,(float)Math.sqrt(Math.pow(re[i],2)+Math.pow(im[i],2)));
+            f[i] = new Tone(i*22050/a.length,(float)Math.sqrt(Math.pow(re[i],2)+Math.pow(im[i],2)));
         }
         return f;
     }
@@ -140,5 +141,38 @@ public class FFT implements Runnable {
         array[i] = array[j];
         array[j] = b;
         return array;
+    }
+    
+    private float[] padData(float[] a) {
+        int zero = 0;
+        for(int i = 0;a[i]!=0;++i) {
+            if(a[i]==0)
+                zero = i;
+        }
+        int newl = a.length-zero;
+        float[] d = new float[newl*4];
+        float c = (float) Math.PI/(2*a.length);
+        for(int i =0;i<d.length;++i) {
+            if(i<newl)
+                d[i] = (float) (gaussianTempering(i,newl)*a[i+zero]);
+            else if(i>newl&&i<newl*3)
+                d[i] = 0;
+            else
+                d[i] = d[d.length-i];
+        }
+        
+        return d;
+    }
+    
+    
+    /**
+     * Returns the value of the Guassian Tempering Function for the point n
+     * @param n the point of the function on the x-Axis
+     * @param m the length of the curve
+     * @return Value of the Gaussian Tempering Function at the point n
+     */
+    private double gaussianTempering(int n, int m) {
+        int mmo = (m-1)/2;
+        return Math.exp(-0.5*((n-mmo)/(0.4*mmo)));
     }
 }
