@@ -6,6 +6,5 @@ public class AnalyzeAudio {
         Window mainWin = Window.getWindow();
         AudioInput a = new AudioInput();
         mainWin.setAudioInput(a);
-        a.startRecording();
     }
 }

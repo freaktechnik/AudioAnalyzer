@@ -28,6 +28,9 @@ public class Tone {
         stepsGenerated = false;
     }
     
+    /**
+     * Calculates the number of steps from the chambertone (baseFrequency)
+     */
     private void getSteps() {
         double stepsCalc = (Tone.factor*Math.log(frequency/Tone.baseFrequency))%12;
         
@@ -44,7 +47,7 @@ public class Tone {
     }
     
     /**
-     * Calculates the absolute name from the frequency
+     * Calculates the absolute name from the number of steps
      * @return the character (maybe string for height...) of the absolute name
      */    
     public String getAbsoluteName() {

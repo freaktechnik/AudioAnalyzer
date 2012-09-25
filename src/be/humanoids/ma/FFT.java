@@ -158,7 +158,7 @@ public class FFT implements Runnable {
             else if(i>newl&&i<newl*3)
                 d[i] = 0;
             else
-                d[i] = d[d.length-i];
+                d[i] = -d[d.length-i];
         }
         
         return d;
@@ -173,6 +173,6 @@ public class FFT implements Runnable {
      */
     private double gaussianTempering(int n, int m) {
         int mmo = (m-1)/2;
-        return Math.exp(-0.5*((n-mmo)/(0.4*mmo)));
+        return Math.exp(-0.125*((n-mmo)/(0.4*mmo)));
     }
 }

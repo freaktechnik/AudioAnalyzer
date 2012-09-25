@@ -36,6 +36,8 @@ public class Filter {
         
         lastTones[lastTone] = newSet[maxI];
         lastTone = (lastTone+1)%toneBufferSize;
+        if(lastTone==0&&!firstCycle)
+            firstCycle = !firstCycle;
     }
     
     /**
@@ -43,10 +45,7 @@ public class Filter {
      * @return stabilized Tone
      */
     public Tone getTone() {
-        if(toneBufferSize-1==lastTone||firstCycle) {
-            if(!firstCycle)
-                firstCycle = !firstCycle;
-            
+        if(this.ready()) {            
             // calculate the average frequency to stabilize the output
             float averageFrequency = 0;
             for(int i = 0;i<toneBufferSize;++i) {
@@ -56,5 +55,9 @@ public class Filter {
             return new Tone(averageFrequency);
         }
         return null;
+    }
+    
+    public boolean ready() {
+        return firstCycle;
     }
 }

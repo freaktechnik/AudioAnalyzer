@@ -41,7 +41,7 @@ public class Window extends JFrame implements TransformedEventListener {
         JPanel buttonPanel = new JPanel( );
         buttonPanel.add(record);
         
-        label = new JLabel("a",JLabel.CENTER);
+        label = new JLabel(" ",JLabel.CENTER);
         
         setSize(400, 350);
         setTitle("Audio Analyzer");
@@ -60,9 +60,7 @@ public class Window extends JFrame implements TransformedEventListener {
     
     public void setAudioInput(AudioInput ai) {
         a = ai;
-
         record.setEnabled(true);
-
     }
     
     private void toggleRecording() {
@@ -86,6 +84,8 @@ public class Window extends JFrame implements TransformedEventListener {
     @Override
     public void handleTransformEvent(EventObject e, Tone[] freq) {
         stabilizer.setNewTone(freq);
-        label.setText(stabilizer.getTone().getAbsoluteName());
+        if(stabilizer.ready()) {
+            label.setText(stabilizer.getTone().getAbsoluteName());
+        }
     }
 }
