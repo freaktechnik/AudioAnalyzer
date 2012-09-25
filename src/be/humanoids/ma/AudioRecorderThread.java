@@ -17,7 +17,6 @@ public class AudioRecorderThread  implements Runnable
 {
     byte[] buffer = new byte[10000];
     boolean record = false;
-    Tone[] freq;
     int samplelength;
     int startf;
     
@@ -70,10 +69,9 @@ public class AudioRecorderThread  implements Runnable
     }
     
     /**
-     * Start the thread and read the stream. but only write if it contains data
+     * Start the thread and read the stream. But only write if it contains data
      * (If there is an input, there will most likely be data)
      */
-    
     @Override
     public void run() {
         record = true;
@@ -110,13 +108,11 @@ public class AudioRecorderThread  implements Runnable
     }
     
     /**
-     * Set the targetDataLine once it is set
-     * @param t the TargetDataLine you want to use
+     * Complete initialization with parameters only available after creating the Thread
+     * @param t the TargetDataLine to listen from
      */
-    
-    public void setT(TargetDataLine t, Tone[] a) {
+    public void setT(TargetDataLine t) {
         targetDataLine = t;
-        freq = a;
         goal = (int)Math.floor(targetDataLine.getFormat().getFrameRate()/40);
         System.out.println(goal);
     }

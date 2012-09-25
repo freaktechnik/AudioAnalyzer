@@ -133,7 +133,6 @@ public class Window extends JFrame implements TransformedEventListener,InputEven
     
     @Override
     public void handleTransformEvent(EventObject e, Tone[] freq) {
-        a.freq = freq;
         visual.updateFrequencies(freq);
     }
     

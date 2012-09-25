@@ -22,14 +22,12 @@ public class AudioInput {
   public AudioRecorderThread arthread;
   Thread thread;
   DataLine.Info dataLineInfo;
-  Tone[] freq;
   int samplelength = (int)Math.pow(2,15);
   int startf = 50;
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();
         dataLineInfo = new DataLine.Info(TargetDataLine.class,audioFormat.getAudioFormat());
-        freq = new Tone[samplelength-startf];
     }
     
     /**
@@ -44,7 +42,7 @@ public class AudioInput {
             }
                 arthread = new AudioRecorderThread(startf,samplelength);
                 thread = new Thread(arthread);
-                arthread.setT(targetDataLine,freq);
+                arthread.setT(targetDataLine);
             
         } catch(Exception e) {
             System.out.println("Error while inizializing recording: "+e);
