@@ -43,7 +43,7 @@ public class Filter {
      * @return stabilized Tone
      */
     public Tone getTone() {
-        if(toneBufferSize-1>lastTone||firstCycle) {
+        if(toneBufferSize-1==lastTone||firstCycle) {
             if(!firstCycle)
                 firstCycle = !firstCycle;
             
