@@ -94,8 +94,8 @@ public class AudioRecorderThread  implements Runnable
                         }
                         data.reset();
                         data.write(c);
+                        fireEvent(data);
                     }
-                    fireEvent(data);
                 }
             }
             data.close();

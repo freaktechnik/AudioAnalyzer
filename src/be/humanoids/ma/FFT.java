@@ -31,17 +31,17 @@ public class FFT implements Runnable {
 
     private Tone[] freq;
     private float[] data;
+    private int[] reversal;
+    private static final double log2 = Math.log(2);
     
     public FFT(float[] a) {
         freq = new Tone[a.length];
+        reversal = new int[(a.length*2)*2]; // quicklist for reversals (shouldn't be needed, tought)
         for(int i= 0;i<a.length;i++) {
             freq[i] = new Tone(i);
+            reversal[i] = -1;
         }
-        data = new float[a.length];
-        setInput(a);
-    }
-    
-    final void setInput(float[] a) {
+        reversal[0] = 0;
         data = a;
     }
     
@@ -53,8 +53,12 @@ public class FFT implements Runnable {
     public Tone[] getSpectrum() {
         data = padData(data);
         freq = transform(data);
-        fireEvent(freq);
-        return freq;
+        Tone[] rfreq = new Tone[freq.length/2]; 
+        for(int i = 0;i<rfreq.length;++i) {
+            rfreq[i] = freq[i];
+        }
+        fireEvent(rfreq);
+        return rfreq;
     }
     
     /**
@@ -93,12 +97,20 @@ public class FFT implements Runnable {
             return null;
         
         int m = a.length/2;
+        int max = (int)(Math.log(a.length)/log2);
         
+        boolean[] check = new boolean[a.length];
+        for(int i=0;i<a.length;++i) {
+            check[i] = false;
+        }
         // bit reversal sorting by the array indexes
-        // first element in a half stays, the other are swapped
-        for(int i=1;i<m/2;++i) {
-            a = swapPositions(a,i,m-i);
-            a = swapPositions(a,i+m,a.length-i);
+        for(int i=0;i<m;++i) {
+            if(!check[i]) {
+                int reversei = reverse(i,max);
+                check[i] = true;
+                check[reversei] = true;
+                a = swapPositions(a,i,reversei);
+            }
         }
         
         float[] re = a;
@@ -106,7 +118,6 @@ public class FFT implements Runnable {
         for(int i = 0;i<im.length;++i) {
             im[i]=0;
         }
-        int max = (int)(Math.log(a.length)/Math.log(2));
         
         for(int i=0;i<max;++i) {
             int p = (int) Math.pow(2,i);
@@ -137,28 +148,58 @@ public class FFT implements Runnable {
     }
 
     private float[] swapPositions(float[] array,int i,int j) {
+        if(i==j)
+            return array;
         float b = array[i];
         array[i] = array[j];
         array[j] = b;
         return array;
     }
     
-    private float[] padData(float[] a) {
-        int zero = 0;
-        for(int i = 0;a[i]!=0;++i) {
-            if(a[i]==0)
-                zero = i;
+    /**
+     * Bit reversal function
+     * @param i bytes to reverse
+     * @param length number of bits to reverse
+     * @return reversed bytes
+     */
+    private int reverse(int i,int length) {
+        if(reversal[i]!=-1) {
+            return reversal[i];
         }
-        int newl = a.length-zero;
-        float[] d = new float[newl*4];
-        float c = (float) Math.PI/(2*a.length);
+        int irev, count, rlength;
+        
+        count = length-1;   // initialize the count variable
+        rlength = 1<<length;
+        irev = 0;
+        for(i>>=1; i!=0; i>>=1)
+        {
+            irev <<= 1;
+            irev |= i & 1;
+            count--;
+        }
+
+        irev <<= count;
+        //irev &= rlength - 1;
+        
+        reversal[i] = irev;
+        reversal[irev] = i;
+
+        return irev;
+    }
+    
+    private float[] padData(float[] a) {
+        float[] d = new float[(a.length*2)*2];
+        float[] g = new float[a.length];
+        
         for(int i =0;i<d.length;++i) {
-            if(i<newl)
-                d[i] = (float) (gaussianTempering(i,newl)*a[i+zero]);
-            else if(i>newl&&i<newl*3)
+            if(i<a.length) {
+                g[i] = (float) gaussianTempering(a.length+i,a.length*2);
+                d[i] = g[i]*a[i];
+            }
+            else if(i>a.length&&i<d.length-a.length)
                 d[i] = 0;
             else
-                d[i] = -d[d.length-i];
+                d[i] = d[d.length-i];
         }
         
         return d;
