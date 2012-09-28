@@ -22,8 +22,8 @@ public class AudioInput {
   public AudioRecorderThread arthread;
   Thread thread;
   DataLine.Info dataLineInfo;
-  int samplelength = (int)Math.pow(2,15);
-  int startf = 50;
+  static final int samplelength = (int)Math.pow(2,14);
+  static final int startf = 50;
     
     AudioInput() {
         audioFormat = new LocalAudioFormat();

@@ -188,18 +188,14 @@ public class FFT implements Runnable {
     }
     
     private float[] padData(float[] a) {
-        float[] d = new float[(a.length*2)*2];
-        float[] g = new float[a.length];
+        float[] d = new float[a.length*2];
         
         for(int i =0;i<d.length;++i) {
             if(i<a.length) {
-                g[i] = (float) gaussianTempering(a.length+i,a.length*2);
-                d[i] = g[i]*a[i];
+                d[i] = (float) (gaussianTempering(i,a.length)*a[i]);
             }
-            else if(i>a.length&&i<d.length-a.length)
-                d[i] = 0;
             else
-                d[i] = d[d.length-i];
+                d[i] = 0;
         }
         
         return d;
