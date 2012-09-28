@@ -104,7 +104,7 @@ public class FFT implements Runnable {
             check[i] = false;
         }
         // bit reversal sorting by the array indexes
-        for(int i=0;i<m;++i) {
+        for(int i=0;i<a.length;++i) {
             if(!check[i]) {
                 int reversei = reverse(i,max);
                 check[i] = true;
@@ -114,35 +114,37 @@ public class FFT implements Runnable {
         }
         
         float[] re = a;
-        float[] im = new float[a.length];
+        /*float[] im = new float[a.length];
         for(int i = 0;i<im.length;++i) {
             im[i]=0;
-        }
+        }*/
         
         for(int i=0;i<max;++i) {
             int p = (int) Math.pow(2,i);
-            int adp = a.length*2/p;
+            int adp = a.length/(2*p);
             for(int j=0;j<adp;++j) {
                 int z = 0;
-                int d = m/p;
-                for(int k = 0;k<p;++k) {
+                int jp = j*p;
+                int jpp = jp+p;
+                for(int k = jp;k<jpp;++k) {
                     float arg = (float) (-2*Math.PI*k*z)/a.length;
                     float reodd = (float) (Math.cos(arg)*re[k+p]);
-                    float imodd = (float) (Math.sin(arg)*im[k+p]);
+                    //float imodd = (float) (Math.sin(arg)*im[k+p]);
                     
                     re[k+p] = re[k]-reodd;
-                    im[k+p] = im[k]-imodd;
+                    //im[k+p] = im[k]-imodd;
                     
                     re[k] += reodd;
-                    im[k] += imodd;
-                    z+=d;
+                    //im[k] += imodd;
+                    z+=adp;
                 }
             }
         }
 
         Tone[] f = new Tone[a.length];
+        float factor = 22050/a.length;
         for(int i=0;i<a.length;++i) {
-            f[i] = new Tone(i*22050/a.length,(float)Math.sqrt(Math.pow(re[i],2)+Math.pow(im[i],2)));
+            f[i] = new Tone(i*factor,re[i]);
         }
         return f;
     }
@@ -166,20 +168,17 @@ public class FFT implements Runnable {
         if(reversal[i]!=-1) {
             return reversal[i];
         }
-        int irev, count, rlength;
         
-        count = length-1;   // initialize the count variable
-        rlength = 1<<length;
-        irev = 0;
+        length--;
+        int irev = 0;
         for(i>>=1; i!=0; i>>=1)
         {
             irev <<= 1;
             irev |= i & 1;
-            count--;
+            length--;
         }
 
-        irev <<= count;
-        //irev &= rlength - 1;
+        irev <<= length; // add the avoided zeros
         
         reversal[i] = irev;
         reversal[irev] = i;
@@ -188,7 +187,7 @@ public class FFT implements Runnable {
     }
     
     private float[] padData(float[] a) {
-        float[] d = new float[a.length*2];
+        float[] d = new float[a.length*4];
         
         for(int i =0;i<d.length;++i) {
             if(i<a.length) {

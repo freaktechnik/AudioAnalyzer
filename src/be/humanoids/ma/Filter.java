@@ -34,17 +34,10 @@ public class Filter {
                 maxI = i;
             }
         }
-        int rlastTone = lastTone==0?toneBufferSize-1:lastTone-1;
-        float lastF = 0;
-        if(!(firstCycle&&lastTone==0)) {
-            lastF = lastTones[rlastTone].getFrequency();
-        }
-        if((lastF+maxDelta>max&&lastF-maxDelta<max)||(firstCycle&&lastTone==0)) {
-            lastTones[lastTone] = newSet[maxI];
-            lastTone = (lastTone+1)%toneBufferSize;
-        }
+        lastTones[lastTone] = newSet[maxI];
+        lastTone = (lastTone+1)%toneBufferSize;
         if(lastTone==0&&!firstCycle)
-                firstCycle = !firstCycle;
+            firstCycle = !firstCycle;
     }
     
     /**
