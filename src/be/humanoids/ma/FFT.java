@@ -53,12 +53,8 @@ public class FFT implements Runnable {
     public Tone[] getSpectrum() {
         data = padData(data);
         freq = transform(data);
-        Tone[] rfreq = new Tone[freq.length/2]; 
-        for(int i = 0;i<rfreq.length;++i) {
-            rfreq[i] = freq[i];
-        }
-        fireEvent(rfreq);
-        return rfreq;
+        fireEvent(freq);
+        return freq;
     }
     
     /**
@@ -112,39 +108,28 @@ public class FFT implements Runnable {
                 a = swapPositions(a,i,reversei);
             }
         }
-        
-        float[] re = a;
-        /*float[] im = new float[a.length];
-        for(int i = 0;i<im.length;++i) {
-            im[i]=0;
-        }*/
-        
+                
         for(int i=0;i<max;++i) {
             int p = (int) Math.pow(2,i);
-            int adp = a.length/(2*p);
+            int pn = p*2;
+            int adp = a.length/pn;
             for(int j=0;j<adp;++j) {
-                int z = 0;
-                int jp = j*p;
+                int jp = j*pn;
                 int jpp = jp+p;
                 for(int k = jp;k<jpp;++k) {
-                    float arg = (float) (-2*Math.PI*k*z)/a.length;
-                    float reodd = (float) (Math.cos(arg)*re[k+p]);
-                    //float imodd = (float) (Math.sin(arg)*im[k+p]);
+                    float arg = (float) (-2*Math.PI*(k-jp)*adp)/a.length;
+                    float reodd = (float) (Math.cos(arg)*a[k+p]);
                     
-                    re[k+p] = re[k]-reodd;
-                    //im[k+p] = im[k]-imodd;
+                    a[k+p] = a[k]-reodd;
                     
-                    re[k] += reodd;
-                    //im[k] += imodd;
-                    z+=adp;
+                    a[k] += reodd;
                 }
             }
         }
 
-        Tone[] f = new Tone[a.length];
-        float factor = 22050/a.length;
-        for(int i=0;i<a.length;++i) {
-            f[i] = new Tone(i*factor,re[i]);
+        Tone[] f = new Tone[m];
+        for(int i=0;i<m;++i) {
+            f[i] = new Tone((i*22050)/a.length,a[i]/2);
         }
         return f;
     }

@@ -34,10 +34,12 @@ public class Filter {
                 maxI = i;
             }
         }
-        lastTones[lastTone] = newSet[maxI];
-        lastTone = (lastTone+1)%toneBufferSize;
-        if(lastTone==0&&!firstCycle)
-            firstCycle = !firstCycle;
+        if(newSet[maxI].getClass().equals(Tone.class)) {
+            lastTones[lastTone] = newSet[maxI];
+            lastTone = (lastTone+1)%toneBufferSize;
+            if(lastTone==0&&!firstCycle)
+                firstCycle = !firstCycle;
+        }
     }
     
     /**

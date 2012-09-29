@@ -12,7 +12,9 @@ public class Tone {
     private boolean stepsGenerated;
     static final float baseFrequency = 440; // the frequency of the tone the absolute names are relative to
     static final int toneSteps = 12;
-    static final double factor = (float) (toneSteps/Math.log(2));
+    private static final double log2 = Math.log(2);
+    private static final double factor = toneSteps/log2;
+    private static final double centFactor = 1200/log2;
 
     
     public Tone(float f) {
@@ -40,7 +42,7 @@ public class Tone {
             endSteps++;
             off = stepsCalc-endSteps;
         }
-        System.out.println(off +" "+frequency);
+        System.out.println(this.getCents() +" "+frequency);
         steps = endSteps;
         stepsGenerated = true;
     }
@@ -67,6 +69,10 @@ public class Tone {
             case 1: return "a#";
             default: return "a";
         }
+    }
+    
+    public double getCents() {
+        return Math.log(frequency/(frequency-off))*centFactor;
     }
     
     public void setAmplitude(float amp) {
