@@ -134,7 +134,7 @@ public class FFT implements Runnable {
 
         Tone[] f = new Tone[m];
         for(int i=0;i<m;++i) {
-            f[i] = new Tone((i*22050)/a.length,a[i]/2);
+            f[i] = new Tone((i*22050.0F)/a.length,Math.abs(a[i]/a.length));
         }
         return f;
     }

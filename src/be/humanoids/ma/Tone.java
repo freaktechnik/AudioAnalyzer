@@ -10,11 +10,11 @@ public class Tone {
     private int steps;
     private double off;
     private boolean stepsGenerated;
-    static final float baseFrequency = 440; // the frequency of the tone the absolute names are relative to
+    static final double baseFrequency = 440.0; // the frequency of the tone the absolute names are relative to
     static final int toneSteps = 12;
-    private static final double log2 = Math.log(2);
+    private static final double log2 = Math.log(2.0);
     private static final double factor = toneSteps/log2;
-    private static final double centFactor = 1200/log2;
+    private static final double centFactor = 1200.0/log2;
 
     
     public Tone(float f) {
@@ -33,7 +33,10 @@ public class Tone {
      * Calculates the number of steps from the chambertone (baseFrequency)
      */
     private void getSteps() {
-        double stepsCalc = (Tone.factor*Math.log(frequency/Tone.baseFrequency))%12;
+        double stepsCalc = Tone.factor*Math.log(frequency/Tone.baseFrequency)%12;
+        if(stepsCalc<0) { //handle Tones under the baseFrequency
+            stepsCalc = Tone.toneSteps+stepsCalc;
+        }
         
         double floorSteps = Math.floor(stepsCalc);
         int endSteps = (int)floorSteps;
@@ -44,7 +47,7 @@ public class Tone {
         }
         steps = endSteps;
         stepsGenerated = true;
-        System.out.println(this.getCents() +" "+frequency+" "+this.getAbsoluteName());
+        //System.out.println(this.getCents() +" "+frequency+" "+this.getAbsoluteName());
     }
     
     /**
@@ -110,5 +113,14 @@ public class Tone {
         hash = 41 * hash + Float.floatToIntBits(this.frequency);
         hash = 41 * hash + Float.floatToIntBits(this.amplitude);
         return hash;
+    }
+    
+    @Override
+    public String toString() {
+        return this.getAbsoluteName()+"("+frequency+"): "+amplitude;
+    }
+    
+    public String toCSVString() {
+        return frequency+";"+amplitude+"\n";
     }
 }
