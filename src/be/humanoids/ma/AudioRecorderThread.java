@@ -45,7 +45,14 @@ public class AudioRecorderThread  implements Runnable
                 actual-=256;
             sound[i] = actual;
         }
+
+        InputEvent event = new InputEvent(this);
+        Iterator i = _listeners.iterator();
+        while(i.hasNext()) {
+            ((InputEventListener) i.next()).handleInputEvent(event,sound);
+        }
         
+        // do the FFT at the end because it will screw up the data
         skipped+=sound.length;
         if(skipped>=goal) {
             FFT fourier = new FFT(sound);
@@ -53,12 +60,6 @@ public class AudioRecorderThread  implements Runnable
             fourier.addEventListener(telistener);
             fourierThread.start();
             skipped=0;
-        }
-
-        InputEvent event = new InputEvent(this);
-        Iterator i = _listeners.iterator();
-        while(i.hasNext()) {
-            ((InputEventListener) i.next()).handleInputEvent(event,sound);
         }
     }
     
@@ -69,8 +70,9 @@ public class AudioRecorderThread  implements Runnable
     }
     
     /**
-     * Start the thread and read the stream. But only write if it contains data
+     * Start the thread and read the stream. But only write if it contains data.
      * (If there is an input, there will most likely be data)
+     * Fires every samplelength a data event and resets the data.
      */
     @Override
     public void run() {

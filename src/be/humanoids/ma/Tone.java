@@ -40,11 +40,11 @@ public class Tone {
         off = stepsCalc-floorSteps;
         if(off>0.5) {
             endSteps++;
-            off = stepsCalc-endSteps;
+            off--;
         }
-        System.out.println(this.getCents() +" "+frequency);
         steps = endSteps;
         stepsGenerated = true;
+        System.out.println(this.getCents() +" "+frequency+" "+this.getAbsoluteName());
     }
     
     /**
@@ -54,7 +54,6 @@ public class Tone {
     public String getAbsoluteName() {
         if(!stepsGenerated)
             getSteps();
-        getSteps();
         switch(steps) {
             case 11: return "g#";
             case 10: return "g";
@@ -71,7 +70,13 @@ public class Tone {
         }
     }
     
+    /**
+     * Calculates the number of cents the tone is off the detected Tone
+     * @return number of cents off the tone
+     */
     public double getCents() {
+        if(!stepsGenerated)
+            getSteps();
         return Math.log(frequency/(frequency-off))*centFactor;
     }
     

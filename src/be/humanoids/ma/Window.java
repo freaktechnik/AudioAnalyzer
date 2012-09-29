@@ -13,15 +13,12 @@ public class Window extends JFrame implements TransformedEventListener {
     private static Window singletonWindow;
     private boolean recording = false;
     private JButton record;
-    private Filter stabilizer;
-            
-            
-    AudioInput a;
     private JLabel label;
-    private Timer transformTime;
+    
+    private Filter stabilizer;
+    AudioInput a;
     
     private Window() {     
-        transformTime = new Timer();
         
         stabilizer = new Filter();
         

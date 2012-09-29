@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 /**
- *
+ * An FFT object preforms FFTs over a float array and fires an event when done.
+ * It runs in a separate thread.
  * @author Martin
  */
 public class FFT implements Runnable {
@@ -50,6 +51,10 @@ public class FFT implements Runnable {
         getSpectrum();
     }
     
+    /**
+     * 
+     * @return spectrum of the frequencies
+     */
     public Tone[] getSpectrum() {
         data = padData(data);
         freq = transform(data);
@@ -133,7 +138,14 @@ public class FFT implements Runnable {
         }
         return f;
     }
-
+    
+    /**
+     * Swaps two elements positions in an array
+     * @param array array the two elements are in
+     * @param i index of first element
+     * @param j index of second element
+     * @return array with swapped elements
+     */
     private float[] swapPositions(float[] array,int i,int j) {
         if(i==j)
             return array;
@@ -171,6 +183,13 @@ public class FFT implements Runnable {
         return irev;
     }
     
+    /**
+     * To make the input periodic, the data needs to be adjusted a bit. To do
+     * so, this applies a gaussian function to the data and adds 3 times the
+     * length zeros after that
+     * @param a data as float array to be adjusted
+     * @return adjusted float array
+     */
     private float[] padData(float[] a) {
         float[] d = new float[a.length*4];
         

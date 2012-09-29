@@ -65,6 +65,10 @@ public class AudioInput {
         thread.start();
     }
     
+    /**
+     * 
+     * @return used AudioFormat Object
+     */
     public AudioFormat getAudioFormat() {
         return audioFormat.getAudioFormat();
     }
