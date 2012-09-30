@@ -1,8 +1,10 @@
 package be.humanoids.ma;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.event.*;
 import java.util.EventObject;
 import javax.swing.*;
 /**
@@ -25,6 +27,7 @@ public class Window extends JFrame implements TransformedEventListener {
         // ---------------------
         //          GUI
         // ---------------------
+        // start/stop button
         record = new JButton("Start");
         record.addActionListener(new ActionListener() {
               @Override
@@ -35,16 +38,60 @@ public class Window extends JFrame implements TransformedEventListener {
         record.setEnabled(false);
 
         // Add button to a panel
-        JPanel buttonPanel = new JPanel( );
+        JPanel buttonPanel = new JPanel(new GridLayout(8,1,10,10));
         buttonPanel.add(record);
         
+        // spinner for ToneOffset
+        String[] pitches = {"C","Bb","F","Eb"};
+        SpinnerModel tosm = new SpinnerListModel(pitches);
+        final JSpinner toSpin = new JSpinner(tosm);
+        toSpin.addChangeListener(
+                new ChangeListener(){
+                    @Override
+                   public void stateChanged(ChangeEvent e) {
+                        // stupid conversion because you can only get an object
+                        String newF = toSpin.getModel().getValue().toString();
+                                  
+                        switch(newF) {
+                            case "Bb":Tone.setOffsetInSteps(2);
+                                break;
+                            case "Eb":Tone.setOffsetInSteps(9);
+                                break;
+                            case "F": Tone.setOffsetInSteps(7);
+                                break;
+                            default: Tone.setOffsetInSteps(0);
+                        }
+                   }
+                }
+        );
+        buttonPanel.add(toSpin);
+        
+        
+        // spinner for BaseFrequency
+        SpinnerNumberModel bfnm = new SpinnerNumberModel((int)Tone.getBaseFrequency(),1,10000,1);
+        final JSpinner bfSpin = new JSpinner(bfnm);
+        bfSpin.addChangeListener(
+                new ChangeListener(){
+                    @Override
+                   public void stateChanged(ChangeEvent e) {
+                        // stupid conversion because you can only get an object
+                        String newF = bfSpin.getModel().getValue().toString();
+                        double newD = Double.parseDouble(newF);
+                        
+                        Tone.setBaseFrequency(newD);
+                   }
+                }
+        );
+        buttonPanel.add(bfSpin);
+        
+        // label for the Tonename
         label = new JLabel(" ",JLabel.CENTER);
         
         setSize(400, 350);
         setTitle("Audio Analyzer");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        getContentPane().add(label,BorderLayout.NORTH);
-        getContentPane().add(buttonPanel,BorderLayout.SOUTH);
+        getContentPane().add(label,BorderLayout.SOUTH);
+        getContentPane().add(buttonPanel,BorderLayout.WEST);
         setVisible(true);
     }
     

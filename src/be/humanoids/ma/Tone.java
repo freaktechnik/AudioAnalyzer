@@ -10,23 +10,26 @@ public class Tone {
     private int steps;
     private double off;
     private boolean stepsGenerated;
-    static final double baseFrequency = 440.0; // the frequency of the tone the absolute names are relative to
-    static final int toneSteps = 12;
+    private static double baseFrequency = 440.0; // the frequency of the tone the absolute names are relative to
+    private static int toneSteps = 12;
     private static final double log2 = Math.log(2.0);
-    private static final double factor = toneSteps/log2;
+    private static double factor;
     private static final double centFactor = 1200.0/log2;
+    private static int offset = 0; // offset in steps to tune diffrent instruments
 
     
     public Tone(float f) {
         frequency = f;
         amplitude = 0;
         stepsGenerated = false;
+        Tone.factor = Tone.toneSteps/Tone.log2;
     }
     
     public Tone(float f, double amp) {
         frequency = f;
         amplitude = amp;
         stepsGenerated = false;
+        Tone.factor = Tone.toneSteps/Tone.log2;
     }
     
     /**
@@ -57,7 +60,7 @@ public class Tone {
     public String getAbsoluteName() {
         if(!stepsGenerated)
             getSteps();
-        switch(steps) {
+        switch((steps+Tone.offset)%Tone.toneSteps) {
             case 11: return "g#";
             case 10: return "g";
             case 9: return "f#";
@@ -123,5 +126,34 @@ public class Tone {
     
     public String toCSVString() {
         return frequency+";"+amplitude+"\n";
+    }
+    
+    /* static methods */
+    
+    public static double getBaseFrequency() {
+        return Tone.baseFrequency;
+    }
+    
+    public static int getOffsetInSteps() {
+        return Tone.offset;
+    }
+    
+    public static int getToneSteps() {
+        return Tone.toneSteps;
+    }
+    
+    public static void setOffsetInSteps(int newOffset) {
+        Tone.offset = newOffset;
+    }
+    
+    public static void setBaseFrequency(double newF) {
+        if(newF>0)
+            Tone.baseFrequency = newF;
+    }
+    public static void setToneSteps(int newStepCount) {
+        if(newStepCount>0) {
+            Tone.toneSteps = newStepCount;
+            Tone.factor = Tone.toneSteps/Tone.log2;
+        }
     }
 }
