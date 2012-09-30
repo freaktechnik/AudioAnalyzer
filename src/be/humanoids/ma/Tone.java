@@ -6,7 +6,7 @@ package be.humanoids.ma;
  */
 public class Tone {
     private float frequency;
-    private float amplitude;
+    private double amplitude;
     private int steps;
     private double off;
     private boolean stepsGenerated;
@@ -23,7 +23,7 @@ public class Tone {
         stepsGenerated = false;
     }
     
-    public Tone(float f, float amp) {
+    public Tone(float f, double amp) {
         frequency = f;
         amplitude = amp;
         stepsGenerated = false;
@@ -87,7 +87,7 @@ public class Tone {
         amplitude = amp;
     }
     
-    public float getAmplitude() {
+    public double getAmplitude() {
         return amplitude;
     }
     
@@ -110,10 +110,11 @@ public class Tone {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + Float.floatToIntBits(this.frequency);
-        hash = 41 * hash + Float.floatToIntBits(this.amplitude);
+        hash = 59 * hash + Float.floatToIntBits(this.frequency);
+        hash = 59 * hash + (int) (Double.doubleToLongBits(this.amplitude) ^ (Double.doubleToLongBits(this.amplitude) >>> 32));
         return hash;
     }
+
     
     @Override
     public String toString() {

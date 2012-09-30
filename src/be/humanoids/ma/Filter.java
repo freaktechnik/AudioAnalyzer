@@ -12,6 +12,7 @@ public class Filter {
     private Tone[] lastTones;
     private int toneBufferSize = 8;
     private int lastTone = 0;
+    private Tone last;
     private boolean firstCycle;
     private int maxDelta = 20;
     
@@ -27,14 +28,15 @@ public class Filter {
     public void setNewTone(Tone[] newSet) {
         int maxI = 0;
         float max = 0;
-        for(int i=0;i<newSet.length;++i) {
+        for(int i=1;i<newSet.length;++i) {
             float actual = newSet[i].getAmplitudeIndB();
             if(actual>max) {
                 max = actual;
                 maxI = i;
             }
         }
-        if(newSet[maxI].getClass().equals(Tone.class)) {
+        if(newSet[maxI].getClass().equals(Tone.class)&&maxI!=0) {
+            last = newSet[maxI];
             lastTones[lastTone] = newSet[maxI];
             lastTone = (lastTone+1)%toneBufferSize;
             if(lastTone==0&&!firstCycle)
@@ -55,6 +57,7 @@ public class Filter {
             }
             averageFrequency = averageFrequency/toneBufferSize;
             return new Tone(averageFrequency);
+            //return last;
         }
         return null;
     }

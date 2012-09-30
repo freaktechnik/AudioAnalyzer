@@ -112,7 +112,10 @@ public class FFT implements Runnable {
                 a = swapPositions(a,i,reversei);
             }
         }
-                
+        float[] im = new float[a.length];
+        for(int i=0;i<im.length;++i) {
+            im[i] = 0;
+        }
         for(int i=0;i<max;++i) {
             int p = (int) Math.pow(2,i);
             int pn = p*2;
@@ -122,19 +125,27 @@ public class FFT implements Runnable {
                 int jpp = jp+p;
                 for(int k = jp;k<jpp;++k) {
                     float arg = (float) (-2*Math.PI*(k-jp)*adp)/a.length;
-                    float reodd = (float) (Math.cos(arg)*a[k+p]);
+                    float recos = (float) Math.cos(arg);
+                    float imsin = (float) Math.sin(arg);
+                    int kp = k+p;
+                    float reodd = recos*a[kp]-imsin*im[kp];
+                    float imodd = imsin*a[kp]+recos*im[kp];
                     
-                    a[k+p] = a[k]-reodd;
+                    a[kp] = a[k]-reodd;
+                    im[kp] = im[k]-imodd;
                     
                     a[k] += reodd;
+                    im[k] += imodd;
                 }
             }
         }
         
-        int m = a.length/2;
+        int m = a.length/4;
         Tone[] f = new Tone[m];
         for(int i=0;i<m;++i) {
-            f[i] = new Tone((i*22050.0F)/a.length,Math.abs(a[i]/a.length));
+            double newre = a[i]/a.length;
+            double newim = im[i]/a.length;
+            f[i] = new Tone((i*22050.0F)/a.length,Math.sqrt(newre*newre+newim*newim));
         }
         return f;
     }
@@ -213,6 +224,6 @@ public class FFT implements Runnable {
      */
     private double gaussianTempering(int n, int m) {
         int mmo = (m-1)/2;
-        return Math.exp(-0.4*((n-mmo)/(0.4*mmo)));
+        return Math.exp(-0.6*((n-mmo)/(0.4*mmo)));
     }
 }

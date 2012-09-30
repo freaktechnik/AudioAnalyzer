@@ -57,7 +57,7 @@ public class Visualizer {
         }
         
         // make sure it gets scaled, so everything fits into the graphicsfield (y-axis)
-        float maxAmp = 0;
+        double maxAmp = 0;
         int maxAmpi = 0;
         for(int f=0;f<freq.length;f++) {
             if(freq[f].getAmplitude()>maxAmp) {
@@ -69,7 +69,7 @@ public class Visualizer {
         double factor = img.getHeight()/maxAmp;
         
         for(int f=0;f<img.getWidth();f++) {
-            float maxAmph = 0;
+            double maxAmph = 0;
             for(int i = f*compression;f<(f+1)*compression;f++) {
                 if(freq[i].getAmplitude()>maxAmph)
                     maxAmph=freq[i].getAmplitude();
@@ -162,11 +162,13 @@ public class Visualizer {
     }
     
     public void setType(String t) {
-        if(t.equals(Visualizer.FFT)) {
-            type = true;
-        }
-        else if(t.equals(Visualizer.WAVEFORM)) {
-            type = false;
+        switch (t) {
+            case Visualizer.FFT:
+                type = true;
+                break;
+            case Visualizer.WAVEFORM:
+                type = false;
+                break;
         }
         
     }
