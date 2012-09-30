@@ -97,7 +97,6 @@ public class FFT implements Runnable {
         if(a.length%2!=0)
             return null;
         
-        int m = a.length/2;
         int max = (int)(Math.log(a.length)/log2);
         
         boolean[] check = new boolean[a.length];
@@ -131,7 +130,8 @@ public class FFT implements Runnable {
                 }
             }
         }
-
+        
+        int m = a.length/2;
         Tone[] f = new Tone[m];
         for(int i=0;i<m;++i) {
             f[i] = new Tone((i*22050.0F)/a.length,Math.abs(a[i]/a.length));
@@ -213,6 +213,6 @@ public class FFT implements Runnable {
      */
     private double gaussianTempering(int n, int m) {
         int mmo = (m-1)/2;
-        return Math.exp(-0.125*((n-mmo)/(0.4*mmo)));
+        return Math.exp(-0.4*((n-mmo)/(0.4*mmo)));
     }
 }

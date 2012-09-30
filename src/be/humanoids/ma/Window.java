@@ -65,7 +65,7 @@ public class Window extends JFrame implements TransformedEventListener {
             if(recording) {
                 a.stopRecording();
                 record.setText("Start");
-                //record.setEnabled(false); // due to a bug in starting again with threads
+                label.setText(" ");
             }
             else {
                 a.startRecording();
@@ -81,8 +81,9 @@ public class Window extends JFrame implements TransformedEventListener {
     @Override
     public void handleTransformEvent(EventObject e, Tone[] freq) {
         stabilizer.setNewTone(freq);
-        if(stabilizer.ready()) {
+        if(stabilizer.ready()&&recording) {
             label.setText(stabilizer.getTone().getAbsoluteName());
+            System.out.println(stabilizer.getTone());
         }
     }
 }

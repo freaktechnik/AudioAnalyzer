@@ -22,7 +22,7 @@ public class AudioInput {
   public AudioRecorderThread arthread;
   Thread thread;
   DataLine.Info dataLineInfo;
-  static final int samplelength = (int)Math.pow(2,14);
+  static final int samplelength = (int)Math.pow(2,13);
   static final int startf = 50;
     
     AudioInput() {
@@ -36,7 +36,7 @@ public class AudioInput {
      */
     public void startRecording() {
         try{
-            if(targetDataLine==null) {
+            if(targetDataLine==null||!targetDataLine.isOpen()) {
                 targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
                 targetDataLine.open(audioFormat.getAudioFormat());
             }

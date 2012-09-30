@@ -101,7 +101,7 @@ public class AudioRecorderThread  implements Runnable
                 }
             }
             data.close();
-            targetDataLine.close();
+            targetDataLine.stop();
         }
         catch(IOException e) {
             System.out.println(e);
