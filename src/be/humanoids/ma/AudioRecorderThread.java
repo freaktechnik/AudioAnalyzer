@@ -116,7 +116,6 @@ public class AudioRecorderThread  implements Runnable
     public void setT(TargetDataLine t) {
         targetDataLine = t;
         goal = (int)Math.floor(targetDataLine.getFormat().getFrameRate()/40);
-        System.out.println(goal);
     }
     
     public void setEventTarget(TransformedEventListener listener) {

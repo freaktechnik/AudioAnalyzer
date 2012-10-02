@@ -1,12 +1,16 @@
 package be.humanoids.ma;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.event.*;
 import java.util.EventObject;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicButtonUI;
 /**
  * the main Window Object, is a singleton.
  * @author Martin
@@ -15,7 +19,10 @@ public class Window extends JFrame implements TransformedEventListener {
     private static Window singletonWindow;
     private boolean recording = false;
     private JButton record;
-    private JLabel label;
+    private JLabel label,label1,label2,label3,label4;
+    private PointerDisplay pIndicator;
+    private ImageIcon normalRecord;
+    private ImageIcon recordingRecord;
     
     private Filter stabilizer;
     AudioInput a;
@@ -28,7 +35,16 @@ public class Window extends JFrame implements TransformedEventListener {
         //          GUI
         // ---------------------
         // start/stop button
-        record = new JButton("Start");
+        normalRecord = new ImageIcon(getClass().getResource("/assets/button_normal.png"));
+        recordingRecord = new ImageIcon(getClass().getResource("/assets/button_pressed.png"));
+        record = new JButton(normalRecord);
+        record.setPressedIcon(recordingRecord);
+        record.setOpaque(false);
+        record.setUI(new BasicButtonUI());
+        record.setBorderPainted(false);
+        Dimension bSize = new Dimension(60,65);
+        record.setPreferredSize(bSize);
+        record.setSize(bSize);
         record.addActionListener(new ActionListener() {
               @Override
 	      public void actionPerformed(ActionEvent e) {
@@ -36,15 +52,17 @@ public class Window extends JFrame implements TransformedEventListener {
 	      }
         });
         record.setEnabled(false);
-
-        // Add button to a panel
-        JPanel buttonPanel = new JPanel(new GridLayout(8,1,10,10));
-        buttonPanel.add(record);
         
         // spinner for ToneOffset
         String[] pitches = {"C","Bb","F","Eb"};
         SpinnerModel tosm = new SpinnerListModel(pitches);
         final JSpinner toSpin = new JSpinner(tosm);
+        toSpin.setOpaque(false);
+        toSpin.setForeground(Color.WHITE);
+        toSpin.setBackground(Color.BLACK);
+        Dimension sSize = new Dimension(60,20);
+        toSpin.setPreferredSize(sSize);
+        toSpin.setSize(sSize);
         toSpin.addChangeListener(
                 new ChangeListener(){
                     @Override
@@ -64,12 +82,15 @@ public class Window extends JFrame implements TransformedEventListener {
                    }
                 }
         );
-        buttonPanel.add(toSpin);
         
         
         // spinner for BaseFrequency
         SpinnerNumberModel bfnm = new SpinnerNumberModel((int)Tone.getBaseFrequency(),1,10000,1);
         final JSpinner bfSpin = new JSpinner(bfnm);
+        bfSpin.setOpaque(false);
+        bfSpin.setPreferredSize(sSize);
+        bfSpin.setSize(sSize);
+        
         bfSpin.addChangeListener(
                 new ChangeListener(){
                     @Override
@@ -82,17 +103,88 @@ public class Window extends JFrame implements TransformedEventListener {
                    }
                 }
         );
-        buttonPanel.add(bfSpin);
         
         // label for the Tonename
         label = new JLabel(" ",JLabel.CENTER);
+        label.setForeground(Color.BLACK);
+        label.setFont(new Font("Sans Serif", Font.PLAIN, 21));
         
-        setSize(400, 350);
+        // label for previous/next toneneames
+        label1 = new JLabel(" ",JLabel.CENTER);
+        label1.setForeground(Color.BLACK);
+        label1.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+        label2 = new JLabel(" ",JLabel.CENTER);
+        label2.setForeground(Color.BLACK);
+        label2.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+        label3 = new JLabel(" ",JLabel.CENTER);
+        label3.setForeground(Color.BLACK);
+        label3.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+        label4 = new JLabel(" ",JLabel.CENTER);
+        label4.setForeground(Color.BLACK);
+        label4.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+
+        JLabel bg = new JLabel(new ImageIcon(getClass().getResource("/assets/ui_bg.png")));
+        JLabel fIndicator = new JLabel(new ImageIcon(getClass().getResource("/assets/pointer_f.png")));
+        
+        pIndicator = new PointerDisplay();
+        pIndicator.setAngle(0);
+        
+        SpringLayout layout = new SpringLayout();
+        JPanel content = new JPanel(layout);
+        content.setSize(450, 320);
+        content.add(record);
+        content.add(bfSpin);
+        content.add(toSpin);
+        content.add(fIndicator);
+        content.add(label);
+        content.add(label1);
+        content.add(label2);
+        content.add(label3);
+        content.add(label4);
+        content.add(pIndicator);
+        content.add(bg);
+        
+        layout.putConstraint(SpringLayout.WEST, record, 40, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, record, 40, SpringLayout.NORTH, content);
+        
+        layout.putConstraint(SpringLayout.WEST, bfSpin, 40, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, bfSpin, 220, SpringLayout.NORTH, content);
+        
+        layout.putConstraint(SpringLayout.WEST, toSpin, 40, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, toSpin, 170, SpringLayout.NORTH, content);
+        
+        layout.putConstraint(SpringLayout.WEST, label, 260, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, label, 220, SpringLayout.NORTH, content);
+        
+        layout.putConstraint(SpringLayout.WEST, label1, 160, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, label1, 220, SpringLayout.NORTH, content);
+        layout.putConstraint(SpringLayout.WEST, label2, 210, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, label2, 220, SpringLayout.NORTH, content);
+        layout.putConstraint(SpringLayout.WEST, label3, 310, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, label3, 220, SpringLayout.NORTH, content);
+        layout.putConstraint(SpringLayout.WEST, label4, 360, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, label4, 220, SpringLayout.NORTH, content);
+        
+        layout.putConstraint(SpringLayout.WEST, pIndicator, 136, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, pIndicator, 56, SpringLayout.NORTH, content);
+        
+        layout.putConstraint(SpringLayout.WEST, fIndicator, 263, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, fIndicator, 233, SpringLayout.NORTH, content);
+        
+        content.setOpaque(false);
+        
         setTitle("Audio Analyzer");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        getContentPane().add(label,BorderLayout.SOUTH);
-        getContentPane().add(buttonPanel,BorderLayout.WEST);
+
+        getContentPane().add(content);
+        setSize(450, 320);
         setVisible(true);
+        
+        Insets insets = getInsets();
+        int insetwidth = insets.left + insets.right;
+        int insetheight = insets.top + insets.bottom;
+        setSize(450 + insetwidth,320 + insetheight); 
+        
     }
     
     public static Window getWindow() {
@@ -111,14 +203,19 @@ public class Window extends JFrame implements TransformedEventListener {
         if(a!=null) {
             if(recording) {
                 a.stopRecording();
-                record.setText("Start");
+                record.setIcon(normalRecord);
                 label.setText(" ");
+                label1.setText(" ");
+                label2.setText(" ");
+                label3.setText(" ");
+                label4.setText(" ");
+                pIndicator.setAngle(0);
             }
             else {
                 a.startRecording();
                 a.arthread.setEventTarget(this);
                 a.resumeRecording();
-                record.setText("Stop");
+                record.setIcon(recordingRecord);
             }
             
             recording = !recording;
@@ -129,8 +226,13 @@ public class Window extends JFrame implements TransformedEventListener {
     public void handleTransformEvent(EventObject e, Tone[] freq) {
         stabilizer.setNewTone(freq);
         if(stabilizer.ready()&&recording) {
-            label.setText(stabilizer.getTone().getAbsoluteName());
-            System.out.println(stabilizer.getTone());
+            Tone temp = stabilizer.getTone();
+            label.setText(temp.getAbsoluteName());
+            label1.setText(temp.getAbsoluteName(-2));
+            label2.setText(temp.getAbsoluteName(-1));
+            label3.setText(temp.getAbsoluteName(1));
+            label4.setText(temp.getAbsoluteName(2));
+            pIndicator.setAngle(temp.getOffset());
         }
     }
 }

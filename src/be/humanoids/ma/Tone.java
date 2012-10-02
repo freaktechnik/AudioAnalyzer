@@ -58,9 +58,18 @@ public class Tone {
      * @return the character (maybe string for height...) of the absolute name
      */    
     public String getAbsoluteName() {
+        return this.getAbsoluteName(0);
+    }
+    
+    /**
+     * Calculates the absolute name from the number of steps with a given offset
+     * @param offset offset to the name of the original Tone
+     * @return absolute name, calculated with offset
+     */
+    public String getAbsoluteName(int offset) {
         if(!stepsGenerated)
             getSteps();
-        switch((steps+Tone.offset)%Tone.toneSteps) {
+        switch((steps+Tone.offset+offset)%Tone.toneSteps) {
             case 11: return "g#";
             case 10: return "g";
             case 9: return "f#";
@@ -84,6 +93,10 @@ public class Tone {
         if(!stepsGenerated)
             getSteps();
         return Math.log(frequency/(frequency-off))*centFactor;
+    }
+    
+    public double getOffset() {
+        return off;
     }
     
     public void setAmplitude(float amp) {
@@ -121,7 +134,16 @@ public class Tone {
     
     @Override
     public String toString() {
-        return this.getAbsoluteName()+"("+frequency+"): "+amplitude;
+        return this.getAbsoluteName();
+    }
+    
+    /**
+     * Returns absolute names relative to the own one.
+     * @param Offset in steps to the Tone
+     * @return actual name with the specified offset
+     */
+    public String getRelativeAbsName(int off) {
+        return this.getAbsoluteName(off);
     }
     
     public String toCSVString() {
