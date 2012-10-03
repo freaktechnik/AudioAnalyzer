@@ -8,9 +8,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import java.awt.GraphicsDevice.WindowTranslucency.*;
 
 /**
- *
+ * A panel to draw a pointer for the offset display
  * @author Martin
  */
 public class PointerDisplay extends JPanel{
@@ -34,8 +35,14 @@ public class PointerDisplay extends JPanel{
         this.setPreferredSize(d);
     }
     
+    /**
+     * Set the angle the pointer should have
+     * @param a offset of the Frequency, bigger or equal than -0.5 and smaller or equal than 0.5
+     */
     public void setAngle(double a) {
-        angle = a*Math.PI;
+        if(a>=-0.5&&a<=0.5)
+            angle = a*Math.PI;
+        this.paintComponent(this.getGraphics());
     }
     
     @Override
@@ -44,9 +51,9 @@ public class PointerDisplay extends JPanel{
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                          RenderingHints.VALUE_ANTIALIAS_ON);
         int center = this.getWidth()/2;
-        g2d.translate(center, this.getHeight());
+        g2d.translate(center, this.getHeight()-4);
         g2d.rotate(angle);
 
-        g2d.drawImage(pointer, -4, -this.getHeight(), this);
+        g2d.drawImage(pointer, -4, -this.getHeight()+4, this);
     }
 }
