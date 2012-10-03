@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * An FFT object preforms FFTs over a float array and fires an event when done.
  * It runs in a separate thread.
+ * 
  * @author Martin
  */
 public class FFT implements Runnable {
@@ -64,6 +65,7 @@ public class FFT implements Runnable {
     
     /**
      * Recursive implementation of a FFT (wrong, don't use....)
+     * 
      * @param a the Datapoints of the Audiosample
      * @param frequency the frequency to search
      * @return The amplitude of the searched frequency
@@ -90,6 +92,7 @@ public class FFT implements Runnable {
     
     /**
      * Non recursive calculation of the FFT. Returning the amplitude of each frequency.
+     * 
      * @param a the data to transform
      * @return frequency spectrum witht he length of a
      */
@@ -112,10 +115,12 @@ public class FFT implements Runnable {
                 a = swapPositions(a,i,reversei);
             }
         }
+        // initialize imaginary array
         float[] im = new float[a.length];
         for(int i=0;i<im.length;++i) {
             im[i] = 0;
         }
+        // butterfly
         for(int i=0;i<max;++i) {
             int p = (int) Math.pow(2,i);
             int pn = p*2;
@@ -140,6 +145,7 @@ public class FFT implements Runnable {
             }
         }
         
+        // create Tones, thanks to padding only valid until m
         int m = a.length/4;
         Tone[] f = new Tone[m];
         for(int i=0;i<m;++i) {
@@ -152,6 +158,7 @@ public class FFT implements Runnable {
     
     /**
      * Swaps two elements positions in an array
+     * 
      * @param array array the two elements are in
      * @param i index of first element
      * @param j index of second element
@@ -168,6 +175,7 @@ public class FFT implements Runnable {
     
     /**
      * Bit reversal function
+     * 
      * @param i bytes to reverse
      * @param length number of bits to reverse
      * @return reversed bytes
@@ -198,6 +206,7 @@ public class FFT implements Runnable {
      * To make the input periodic, the data needs to be adjusted a bit. To do
      * so, this applies a gaussian function to the data and adds 3 times the
      * length zeros after that
+     * 
      * @param a data as float array to be adjusted
      * @return adjusted float array
      */
@@ -218,6 +227,7 @@ public class FFT implements Runnable {
     
     /**
      * Returns the value of the Guassian Tempering Function for the point n
+     * 
      * @param n the point of the function on the x-Axis
      * @param m the length of the curve
      * @return Value of the Gaussian Tempering Function at the point n

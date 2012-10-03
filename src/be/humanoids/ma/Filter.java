@@ -22,6 +22,7 @@ public class Filter {
     
     /**
      * Adds a new tone from a frequency spectrum to the Buffer
+     * 
      * @param newSet Spectrum the Tone gets extracted from
      */
     public void setNewTone(Tone[] newSet) {
@@ -44,6 +45,7 @@ public class Filter {
     
     /**
      * Stabilizes the extracted Tone by averaging it with the last few Tones.
+     * 
      * @return stabilized Tone
      */
     public Tone getTone() {

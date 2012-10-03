@@ -111,6 +111,7 @@ public class AudioRecorderThread  implements Runnable
     
     /**
      * Complete initialization with parameters only available after creating the Thread
+     * 
      * @param t the TargetDataLine to listen from
      */
     public void setT(TargetDataLine t) {
@@ -124,6 +125,7 @@ public class AudioRecorderThread  implements Runnable
     
     /**
      * This stops reading the data from the soundcard.
+     * 
      * @return audio data.
      */
     public ByteArrayOutputStream stop() {

@@ -52,6 +52,7 @@ public class AudioInput {
     
     /**
      * stops capturing the input audio
+     * 
      * @return Captured audio
      */
     public ByteArrayOutputStream stopRecording() {

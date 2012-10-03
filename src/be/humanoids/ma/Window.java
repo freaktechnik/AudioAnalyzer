@@ -77,9 +77,6 @@ public class Window extends JFrame implements TransformedEventListener {
         String[] pitches = {"C","Bb","F","Eb"};
         SpinnerModel tosm = new SpinnerListModel(pitches);
         final JSpinner toSpin = new JSpinner(tosm);
-        toSpin.setOpaque(false);
-        toSpin.setForeground(Color.WHITE);
-        toSpin.setBackground(Color.BLACK);
         Dimension sSize = new Dimension(60,20);
         toSpin.setPreferredSize(sSize);
         toSpin.setSize(sSize);
@@ -264,8 +261,14 @@ public class Window extends JFrame implements TransformedEventListener {
                 label1.setText(" ");
                 label2.setText(" ");
             }
-            label3.setText(temp.getAbsoluteName(1));
-            label4.setText(temp.getAbsoluteName(2));
+            if(temp.getFrequency()<a.getAudioFormat().getSampleRate()/2) {
+                label3.setText(temp.getAbsoluteName(1));
+                label4.setText(temp.getAbsoluteName(2));
+            }
+            else {
+                label3.setText(" ");
+                label4.setText(" ");
+            }
             pIndicator.setAngle(temp.getOffset());
             this.repaint();
         }

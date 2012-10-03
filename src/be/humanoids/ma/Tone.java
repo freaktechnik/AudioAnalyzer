@@ -2,6 +2,7 @@ package be.humanoids.ma;
 
 /**
  * A tone is essentially a frequency and can be converted into the absolute tone naming scale
+ * 
  * @author Martin
  */
 public class Tone {
@@ -55,6 +56,7 @@ public class Tone {
     
     /**
      * Calculates the absolute name from the number of steps
+     * 
      * @return the character (maybe string for height...) of the concert absolute name
      */    
     public String getAbsoluteName() {
@@ -63,6 +65,7 @@ public class Tone {
     
     /**
      * Calculates the absolute name from the number of steps with a given offset
+     * 
      * @param offset offset to the name of the original Tone
      * @return absolute name, calculated with offset
      */
@@ -87,6 +90,7 @@ public class Tone {
     
     /**
      * Calculates the number of cents the tone is off the detected Tone
+     * 
      * @return number of cents off the tone
      */
     public double getCents() {

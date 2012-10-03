@@ -4,31 +4,25 @@
  */
 package be.humanoids.ma;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import java.awt.GraphicsDevice.WindowTranslucency.*;
 
 /**
  * A panel to draw a pointer for the offset display
  * @author Martin
  */
 public class PointerDisplay extends JPanel{
-    private BufferedImage pointer;
+    private ImageIcon pointer;
     private double angle;
     
     
     PointerDisplay() {
         super();
-        ImageIcon icon = new ImageIcon(getClass().getResource("/assets/pointer_p.png"));
-        Image source = icon.getImage();
-        int w = source.getWidth(null);
-        int h = source.getHeight(null);
-        pointer = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = (Graphics2D)pointer.getGraphics();
-        g2d.drawImage(source, 0, 0, null);
-        g2d.dispose();
+        pointer = new ImageIcon(getClass().getResource("/assets/pointer_p.png"));
         angle = 0;
         Dimension d = new Dimension(259,133);
         this.setSize(d);
@@ -37,6 +31,7 @@ public class PointerDisplay extends JPanel{
     
     /**
      * Set the angle the pointer should have
+     * 
      * @param a offset of the Frequency, bigger or equal than -0.5 and smaller or equal than 0.5
      */
     public void setAngle(double a) {
@@ -54,6 +49,6 @@ public class PointerDisplay extends JPanel{
         g2d.translate(center, this.getHeight()-4);
         g2d.rotate(angle);
 
-        g2d.drawImage(pointer, -4, -this.getHeight()+4, this);
+        g2d.drawImage(pointer.getImage(), -4, -this.getHeight()+4, this);
     }
 }
