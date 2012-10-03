@@ -26,7 +26,8 @@ public class AudioRecorderThread  implements Runnable
     TransformedEventListener telistener;
     
     // Event stuff
-    private List _listeners = new ArrayList();
+    @SuppressWarnings("unchecked")
+    private List<InputEventListener> _listeners = new ArrayList();
     private int skipped = 0;
     private int goal;
     public synchronized void addEventListener(InputEventListener listener) {

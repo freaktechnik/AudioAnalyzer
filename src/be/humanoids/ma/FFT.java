@@ -15,7 +15,8 @@ import java.util.List;
  */
 public class FFT implements Runnable {
     // Event stuff
-    private List _listeners = new ArrayList();
+    @SuppressWarnings("unchecked")
+    private List<TransformedEventListener> _listeners = new ArrayList();
     public synchronized void addEventListener(TransformedEventListener listener) {
         _listeners.add(listener);
     }

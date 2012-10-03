@@ -10,7 +10,7 @@ package be.humanoids.ma;
  */
 public class Filter {
     private Tone[] lastTones;
-    private final static int toneBufferSize = 7;
+    private final static int toneBufferSize = 3;
     private int lastTone;
     private boolean firstCycle;
     

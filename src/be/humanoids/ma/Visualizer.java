@@ -11,7 +11,8 @@ import java.util.List;
  */
 public class Visualizer {
     // Event stuff
-    private List _listeners = new ArrayList();
+    @SuppressWarnings("unchecked")
+    private List<VisualizerEventListener> _listeners = new ArrayList();
     public synchronized void addEventListener(VisualizerEventListener listener) {
         _listeners.add(listener);
     }

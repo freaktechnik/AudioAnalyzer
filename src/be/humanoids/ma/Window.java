@@ -1,9 +1,6 @@
 package be.humanoids.ma;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
@@ -11,7 +8,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicButtonUI;
-import java.awt.GraphicsDevice.WindowTranslucency.*;
 /**
  * the main Window Object, is a singleton.
  * @author Martin
@@ -35,6 +31,11 @@ public class Window extends JFrame implements TransformedEventListener {
         // ---------------------
         //          GUI
         // ---------------------
+        
+        GraphicsEnvironment ge =
+            GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gds = ge.getDefaultScreenDevice();
+        
         final Color alphaZero = new Color(0, true);
         
         // start/stop button
@@ -161,7 +162,8 @@ public class Window extends JFrame implements TransformedEventListener {
         content.add(label3);
         content.add(label4);
         content.add(pIndicator);
-        content.add(close);
+        if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT));
+            content.add(close);
         content.add(bg);
         
         layout.putConstraint(SpringLayout.WEST, record, 40, SpringLayout.WEST, content);
@@ -204,7 +206,8 @@ public class Window extends JFrame implements TransformedEventListener {
 
         getContentPane().add(content);
         setSize(450, 320);
-        setUndecorated(true);
+        if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT));
+            setUndecorated(true);
         setBackground(alphaZero);
         setVisible(true);
         
