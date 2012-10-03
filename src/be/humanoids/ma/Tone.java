@@ -55,7 +55,7 @@ public class Tone {
     
     /**
      * Calculates the absolute name from the number of steps
-     * @return the character (maybe string for height...) of the absolute name
+     * @return the character (maybe string for height...) of the concert absolute name
      */    
     public String getAbsoluteName() {
         return this.getAbsoluteName(0);

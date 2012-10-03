@@ -10,15 +10,14 @@ package be.humanoids.ma;
  */
 public class Filter {
     private Tone[] lastTones;
-    private int toneBufferSize = 8;
-    private int lastTone = 0;
-    private Tone last;
+    private final static int toneBufferSize = 7;
+    private int lastTone;
     private boolean firstCycle;
-    private int maxDelta = 20;
     
     Filter() {
         lastTones = new Tone[toneBufferSize];
         firstCycle = false;
+        lastTone = 0;
     }
     
     /**
@@ -36,9 +35,8 @@ public class Filter {
             }
         }
         if(newSet[maxI].getClass().equals(Tone.class)&&maxI!=0) {
-            last = newSet[maxI];
             lastTones[lastTone] = newSet[maxI];
-            lastTone = (lastTone+1)%toneBufferSize;
+            lastTone = (lastTone+1)%Filter.toneBufferSize;
             if(lastTone==0&&!firstCycle)
                 firstCycle = !firstCycle;
         }
@@ -49,20 +47,30 @@ public class Filter {
      * @return stabilized Tone
      */
     public Tone getTone() {
+        float averageFrequency = 0;
         if(this.ready()) {            
             // calculate the average frequency to stabilize the output
-            float averageFrequency = 0;
-            for(int i = 0;i<toneBufferSize;++i) {
+            for(int i = 0;i<Filter.toneBufferSize;++i) {
                 averageFrequency += lastTones[i].getFrequency();
             }
-            averageFrequency = averageFrequency/toneBufferSize;
-            return new Tone(averageFrequency);
-            //return last;
+            averageFrequency = averageFrequency/Filter.toneBufferSize;
         }
-        return null;
+        else {
+            for(int i =0;i<lastTone;++i) {
+                averageFrequency += lastTones[i].getFrequency();
+            }
+            if(lastTone>0)
+                averageFrequency = averageFrequency/lastTone;
+        }
+        return new Tone(averageFrequency);
     }
     
     public boolean ready() {
         return firstCycle;
+    }
+    
+    public void reset() {
+        firstCycle = false;
+        lastTone = 0;
     }
 }
