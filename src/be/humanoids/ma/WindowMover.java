@@ -17,9 +17,13 @@ import java.awt.event.MouseMotionListener;
 public class WindowMover implements MouseListener, MouseMotionListener {
     private Point dragStart;
     
-    WindowMover(Component window) {
+    private WindowMover(Component window) {
         window.addMouseListener(this);
         window.addMouseMotionListener(this);
+    }
+    
+    public static void addMoving(Component window) {
+        WindowMover mover = new WindowMover(window);
     }
     
     @Override

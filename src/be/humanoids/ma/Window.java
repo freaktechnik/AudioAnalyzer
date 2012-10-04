@@ -197,9 +197,8 @@ public class Window extends JFrame implements TransformedEventListener {
         layout.putConstraint(SpringLayout.NORTH, close, 0, SpringLayout.NORTH, content);
         
         content.setOpaque(false);
-        content.setDoubleBuffered(false);
         
-        WindowMover move = new WindowMover(this);
+        WindowMover.addMoving(this);
         
         setTitle("Audio Analyzer");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
