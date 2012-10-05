@@ -130,7 +130,7 @@ public class FFT implements Runnable {
                 int jp = j*pn;
                 int jpp = jp+p;
                 for(int k = jp;k<jpp;++k) {
-                    float arg = (float) (-2*Math.PI*(k-jp)*adp)/a.length;
+                    float arg = (float) (-Math.PI*(k-jp))/p;
                     float recos = (float) Math.cos(arg);
                     float imsin = (float) Math.sin(arg);
                     int kp = k+p;

@@ -3,9 +3,6 @@
  * and open the template in the editor.
  */
 package be.humanoids.ma;
-
-
-import java.util.Date;
 /**
  * A simple class to mesure the time consumed in a program
  * @author Martin
