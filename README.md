@@ -14,6 +14,7 @@ Windows 7 x86_64 with Java 7
 Download of the built Project
 ==============
 https://www.dropbox.com/s/0pjhfbt0br7tiar/PerfectTone.jar
+or click on the Downloads on the Github page.
 
 Running instructions
 ==============
