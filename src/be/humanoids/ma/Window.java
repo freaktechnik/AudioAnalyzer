@@ -3,6 +3,7 @@ package be.humanoids.ma;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.EventObject;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -202,6 +203,14 @@ public class Window extends JFrame implements TransformedEventListener {
         
         setTitle("Audio Analyzer");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        ArrayList icons = new ArrayList();
+        icons.add(new ImageIcon(getClass().getResource("/assets/logo.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/assets/logo_32.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/assets/logo_16.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/assets/logo_64.png")).getImage());
+        
+        setIconImages(icons);
 
         getContentPane().add(content);
         setSize(450, 320);
