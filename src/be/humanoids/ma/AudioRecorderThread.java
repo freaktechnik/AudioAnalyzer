@@ -39,8 +39,9 @@ public class AudioRecorderThread  implements Runnable
     private synchronized void fireEvent(ByteArrayOutputStream a) {
         float[] sound = new float[a.size()];
         ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
+        float actual;
         for(int i=0;i<sound.length;i++) {
-            float actual = (float)b.read();
+            actual = (float)b.read();
             if(actual>128)
                 actual-=256;
             sound[i] = actual;
@@ -83,14 +84,16 @@ public class AudioRecorderThread  implements Runnable
                 System.out.println("No target DataLine defined, can't start to capture it");
             }
             targetDataLine.start();
+            int count,off;
+            byte[] b,c;
             while(record) {
-                int count = targetDataLine.read(buffer, 0, buffer.length);
+                count = targetDataLine.read(buffer, 0, buffer.length);
                 if(count > 0) {
                     data.write(buffer, 0, count);
                     if(data.size()>samplelength) {                        
-                        byte[] b = data.toByteArray();
-                        byte[] c = new byte[samplelength];
-                        int off = data.size()-samplelength;
+                        b = data.toByteArray();
+                        c = new byte[samplelength];
+                        off = data.size()-samplelength;
                         for(int i=0;i<samplelength;++i) {
                             c[i] = b[off+i];
                         }

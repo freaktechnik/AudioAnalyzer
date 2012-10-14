@@ -104,9 +104,10 @@ public class FFT implements Runnable {
             check[i] = false;
         }
         // bit reversal sorting by the array indexes
+        int reversei;
         for(int i=0;i<a.length;++i) {
             if(!check[i]) {
-                int reversei = reverse(i,max);
+                reversei = reverse(i,max);
                 check[i] = true;
                 check[reversei] = true;
                 a = swapPositions(a,i,reversei);
@@ -117,21 +118,24 @@ public class FFT implements Runnable {
         for(int i=0;i<im.length;++i) {
             im[i] = 0;
         }
+        
+        int p,pn,adp,jp,jpp,kp;
+        float arg,recos,imsin,reodd,imodd;
         // butterfly
         for(int i=0;i<max;++i) {
-            int p = (int) Math.pow(2,i);
-            int pn = p*2;
-            int adp = a.length/pn;
+            p = (int) Math.pow(2,i);
+            pn = p*2;
+            adp = a.length/pn;
             for(int j=0;j<adp;++j) {
-                int jp = j*pn;
-                int jpp = jp+p;
+                jp = j*pn;
+                 jpp = jp+p;
                 for(int k = jp;k<jpp;++k) {
-                    float arg = (float) (-Math.PI*(k-jp))/p;
-                    float recos = (float) Math.cos(arg);
-                    float imsin = (float) Math.sin(arg);
-                    int kp = k+p;
-                    float reodd = recos*a[kp]-imsin*im[kp];
-                    float imodd = imsin*a[kp]+recos*im[kp];
+                    arg = (float) (-Math.PI*(k-jp))/p;
+                    recos = (float) Math.cos(arg);
+                    imsin = (float) Math.sin(arg);
+                    kp = k+p;
+                    reodd = recos*a[kp]-imsin*im[kp];
+                    imodd = imsin*a[kp]+recos*im[kp];
                     
                     a[kp] = a[k]-reodd;
                     im[kp] = im[k]-imodd;
@@ -144,10 +148,11 @@ public class FFT implements Runnable {
         
         // create Tones, thanks to padding only valid until m
         int m = a.length/4;
+        double newre,newim;
         Tone[] f = new Tone[m];
         for(int i=0;i<m;++i) {
-            double newre = a[i]/a.length;
-            double newim = im[i]/a.length;
+            newre = a[i]/a.length;
+            newim = im[i]/a.length;
             f[i] = new Tone((i*22050.0F)/a.length,Math.sqrt(newre*newre+newim*newim));
         }
         return f;

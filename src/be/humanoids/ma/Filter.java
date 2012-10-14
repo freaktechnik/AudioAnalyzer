@@ -24,8 +24,9 @@ public class Filter {
     public void setNewTone(Tone[] newSet) {
         int maxI = 0;
         float max = 0;
+        float actual;
         for(int i=1;i<newSet.length;++i) {
-            float actual = newSet[i].getAmplitudeIndB();
+            actual = newSet[i].getAmplitudeIndB();
             if(actual>max) {
                 max = actual;
                 maxI = i;
