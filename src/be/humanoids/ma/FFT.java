@@ -11,8 +11,7 @@ import java.util.List;
  */
 public class FFT implements Runnable {
     // Event stuff
-    @SuppressWarnings("unchecked")
-    private List<TransformedEventListener> _listeners = new ArrayList();
+    private List<TransformedEventListener> _listeners = new ArrayList<>();
     public synchronized void addEventListener(TransformedEventListener listener) {
         _listeners.add(listener);
     }
@@ -22,7 +21,7 @@ public class FFT implements Runnable {
 
     private synchronized void fireEvent(Tone[] freq) {
         TransformedEvent event = new TransformedEvent(this);
-        Iterator i = _listeners.iterator();
+        Iterator<TransformedEventListener> i = _listeners.iterator();
         while(i.hasNext()) {
             ((TransformedEventListener) i.next()).handleTransformEvent(event,freq);
         }

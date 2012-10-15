@@ -25,8 +25,7 @@ public class AudioRecorderThread  implements Runnable
     TransformedEventListener telistener;
     
     // Event stuff
-    @SuppressWarnings("unchecked")
-    private List<InputEventListener> _listeners = new ArrayList();
+    private List<InputEventListener> _listeners = new ArrayList<>();
     private int skipped = 0;
     private int goal;
     public synchronized void addEventListener(InputEventListener listener) {
@@ -48,7 +47,7 @@ public class AudioRecorderThread  implements Runnable
         }
 
         InputEvent event = new InputEvent(this);
-        Iterator i = _listeners.iterator();
+        Iterator<InputEventListener> i = _listeners.iterator();
         while(i.hasNext()) {
             ((InputEventListener) i.next()).handleInputEvent(event,sound);
         }
@@ -86,13 +85,13 @@ public class AudioRecorderThread  implements Runnable
             targetDataLine.start();
             int count,off;
             byte[] b,c;
+            c = new byte[samplelength];
             while(record) {
                 count = targetDataLine.read(buffer, 0, buffer.length);
                 if(count > 0) {
                     data.write(buffer, 0, count);
                     if(data.size()>samplelength) {                        
                         b = data.toByteArray();
-                        c = new byte[samplelength];
                         off = data.size()-samplelength;
                         for(int i=0;i<samplelength;++i) {
                             c[i] = b[off+i];

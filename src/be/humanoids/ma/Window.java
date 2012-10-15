@@ -128,18 +128,20 @@ public class Window extends JFrame implements TransformedEventListener {
         label.setFont(new Font("Sans Serif", Font.PLAIN, 21));
         
         // label for previous/next toneneames
+        
+        Font labelFont = new Font("Sans Serif", Font.PLAIN, 21);
         label1 = new JLabel(" ",JLabel.CENTER);
         label1.setForeground(Color.GRAY);
-        label1.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+        label1.setFont(labelFont);
         label2 = new JLabel(" ",JLabel.CENTER);
         label2.setForeground(Color.DARK_GRAY);
-        label2.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+        label2.setFont(labelFont);
         label3 = new JLabel(" ",JLabel.CENTER);
         label3.setForeground(Color.DARK_GRAY);
-        label3.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+        label3.setFont(labelFont);
         label4 = new JLabel(" ",JLabel.CENTER);
         label4.setForeground(Color.GRAY);
-        label4.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+        label4.setFont(labelFont);
 
         // bg image
         JLabel bg = new JLabel(new ImageIcon(getClass().getResource("/assets/ui_bg.png")));
