@@ -203,7 +203,7 @@ public class Window extends JFrame implements TransformedEventListener {
         
         WindowMover.addMoving(this);
         
-        setTitle("Audio Analyzer");
+        setTitle("PerfectTone");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
         ArrayList icons = new ArrayList();
