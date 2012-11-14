@@ -22,22 +22,11 @@ public class Filter {
      * @param newSet Spectrum the Tone gets extracted from
      */
     public void setNewTone(Tone[] newSet) {
-        int maxI = 0;
-        float max = 0;
-        float actual;
-        for(int i=1;i<newSet.length;++i) {
-            actual = newSet[i].getAmplitudeIndB();
-            if(actual>max) {
-                max = actual;
-                maxI = i;
-            }
-        }
-        if(newSet[maxI].getClass().equals(Tone.class)&&maxI!=0) {
-            lastTones[lastTone] = newSet[maxI];
-            lastTone = (lastTone+1)%Filter.toneBufferSize;
-            if(lastTone==0&&!firstCycle)
-                firstCycle = !firstCycle;
-        }
+        HPS newTone = new HPS(newSet,3);
+        lastTones[lastTone] = newTone.getTone();
+        lastTone = (lastTone+1)%Filter.toneBufferSize;
+        if(lastTone==0&&!firstCycle)
+            firstCycle = !firstCycle;
     }
     
     /**
