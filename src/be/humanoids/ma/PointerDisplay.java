@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 public class PointerDisplay extends JPanel{
     private ImageIcon pointer;
     private double angle;
+    private int center;
     
     
     PointerDisplay() {
@@ -22,6 +23,7 @@ public class PointerDisplay extends JPanel{
         angle = 0;
         Dimension d = new Dimension(259,133);
         this.setSize(d);
+        center = 130;
         this.setPreferredSize(d);
     }
     
@@ -31,8 +33,9 @@ public class PointerDisplay extends JPanel{
      * @param a offset of the Frequency, bigger or equal than -0.5 and smaller or equal than 0.5
      */
     public void setAngle(double a) {
-        if(a>=-0.5&&a<=0.5)
+        if(a>=-0.5&&a<=0.5) {
             angle = a*Math.PI;
+        }
         this.paintComponent(this.getGraphics());
     }
     
@@ -41,7 +44,7 @@ public class PointerDisplay extends JPanel{
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                          RenderingHints.VALUE_ANTIALIAS_ON);
-        int center = this.getWidth()/2;
+        //center = this.getWidth()/2;
         g2d.translate(center, this.getHeight()-4);
         g2d.rotate(angle);
 

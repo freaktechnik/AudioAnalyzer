@@ -21,6 +21,7 @@ public class Window extends JFrame implements TransformedEventListener {
     private PointerDisplay pIndicator;
     private ImageIcon normalRecord;
     private ImageIcon recordingRecord;
+    private boolean opaque;
     
     private Filter stabilizer;
     AudioInput a;
@@ -33,6 +34,8 @@ public class Window extends JFrame implements TransformedEventListener {
         //          GUI
         // ---------------------
         
+        opaque = true;
+        
         GraphicsEnvironment ge =
             GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gds = ge.getDefaultScreenDevice();
@@ -44,7 +47,7 @@ public class Window extends JFrame implements TransformedEventListener {
         recordingRecord = new ImageIcon(getClass().getResource("/assets/button_pressed.png"));
         record = new JButton(normalRecord);
         record.setPressedIcon(recordingRecord);
-        record.setOpaque(false);
+        record.setOpaque(!opaque);
         record.setUI(new BasicButtonUI());
         record.setBorderPainted(false);
         Dimension bSize = new Dimension(60,65);
@@ -62,7 +65,7 @@ public class Window extends JFrame implements TransformedEventListener {
         
         JButton close = new JButton(new ImageIcon(getClass().getResource("/assets/close_normal.png")));
         close.setPressedIcon(new ImageIcon(getClass().getResource("/assets/close.png")));
-        close.setOpaque(false);
+        close.setOpaque(!opaque);
         close.setUI(new BasicButtonUI());
         close.setBorderPainted(false);
         Dimension cSize = new Dimension(22,27);
@@ -165,8 +168,8 @@ public class Window extends JFrame implements TransformedEventListener {
         content.add(label3);
         content.add(label4);
         content.add(pIndicator);
-        if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT));
-            content.add(close);
+        //if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT))
+        //    content.add(close);
         content.add(bg);
         
         layout.putConstraint(SpringLayout.WEST, record, 40, SpringLayout.WEST, content);
@@ -199,7 +202,7 @@ public class Window extends JFrame implements TransformedEventListener {
         layout.putConstraint(SpringLayout.WEST, close, 415, SpringLayout.WEST, content);
         layout.putConstraint(SpringLayout.NORTH, close, 0, SpringLayout.NORTH, content);
         
-        content.setOpaque(false);
+        content.setOpaque(!opaque);
         
         WindowMover.addMoving(this);
         
@@ -216,9 +219,10 @@ public class Window extends JFrame implements TransformedEventListener {
 
         getContentPane().add(content);
         setSize(450, 320);
-        if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT));
-            setUndecorated(true);
-        setBackground(alphaZero);
+        //if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT)) {
+        //    setUndecorated(true);
+        //    setBackground(alphaZero);
+        //}
         setVisible(true);
         
     }
