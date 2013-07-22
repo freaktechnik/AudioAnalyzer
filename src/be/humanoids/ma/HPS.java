@@ -16,31 +16,31 @@ public class HPS {
     HPS(Tone[] data,int depth) {
         this.data = data;
         this.depth = depth;
-        this.calculateHPS();
+        hps = this.calculateHPS();
     }
     
-    private void calculateHPS() {
+    private Tone calculateHPS() {
         Tone[] tempSpec;
         Tone tempData,tempShrink;
         double maxAmp = 0;
         int maxI = 0;
-        for(int i=1;i<depth-1;++i) {
-            tempSpec = shrinkSpectrum(data,i+1);
+        for(int i=2;i<=depth;++i) {
+            System.out.println(i);
+            // always make the spectrum half as long
+            tempSpec = shrinkSpectrum(data,i);
             for(int j=0;j<tempSpec.length;++j) {
                 tempShrink = tempSpec[j];
                 tempData = data[j];
                 data[j] = new Tone(tempData.getFrequency()*tempShrink.getFrequency(),tempData.getAmplitude()*tempShrink.getAmplitude());
+                
+                if(i==depth&&maxAmp<data[j].getAmplitude()) {
+                    maxAmp = data[j].getAmplitude();
+                    maxI = j;
+                }
             }
         }
         
-        for(int k=0;k<data.length/depth;++k) {
-            if(maxAmp<data[k].getAmplitude()) {
-                maxAmp = data[k].getAmplitude();
-                maxI = k;
-            }
-        }
-        
-        hps = data[maxI];
+        return data[maxI];
     }
     
     private Tone[] shrinkSpectrum(Tone[] input,int factor) {
@@ -56,7 +56,7 @@ public class HPS {
     private Tone getInterpolatedTone(Tone[] input,int start, int length) {
         float freq = 0;
         float amp = 0;
-        for(int i=start;i<length;++i) {
+        for(int i=start;i<start+length;++i) {
             freq += input[i].getFrequency();
             amp += input[i].getAmplitude();
         }

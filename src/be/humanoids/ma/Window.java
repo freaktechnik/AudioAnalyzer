@@ -26,13 +26,20 @@ public class Window extends JFrame implements TransformedEventListener {
     private Filter stabilizer;
     AudioInput a;
     
-    private Window() {     
+    private Window() {
         
         stabilizer = new Filter();
         
         // ---------------------
         //          GUI
         // ---------------------
+        
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch(Exception e) {
+            System.out.println("Couldn't use native look and feel");
+        }
         
         opaque = true;
         
@@ -62,7 +69,7 @@ public class Window extends JFrame implements TransformedEventListener {
         record.setEnabled(false);
         
         // close button
-        
+        /*
         JButton close = new JButton(new ImageIcon(getClass().getResource("/assets/close_normal.png")));
         close.setPressedIcon(new ImageIcon(getClass().getResource("/assets/close.png")));
         close.setOpaque(!opaque);
@@ -77,12 +84,12 @@ public class Window extends JFrame implements TransformedEventListener {
                   System.exit(0);
 	      }
         });
-        
+        */
         // spinner for ToneOffset
         String[] pitches = {"C","Bb","F","Eb"};
         SpinnerModel tosm = new SpinnerListModel(pitches);
         final JSpinner toSpin = new JSpinner(tosm);
-        Dimension sSize = new Dimension(60,20);
+        Dimension sSize = new Dimension(60,24);
         toSpin.setPreferredSize(sSize);
         toSpin.setSize(sSize);
         toSpin.addChangeListener(
@@ -147,8 +154,9 @@ public class Window extends JFrame implements TransformedEventListener {
         label4.setFont(labelFont);
 
         // bg image
-        JLabel bg = new JLabel(new ImageIcon(getClass().getResource("/assets/ui_bg.png")));
-        bg.setBackground(alphaZero);
+        //JLabel bg = new JLabel(new ImageIcon(getClass().getResource("/assets/ui_bg.png")));
+       // bg.setBackground(alphaZero);
+        
         // little red arrow in the tone display
         JLabel fIndicator = new JLabel(new ImageIcon(getClass().getResource("/assets/pointer_f.png")));
         
@@ -170,7 +178,7 @@ public class Window extends JFrame implements TransformedEventListener {
         content.add(pIndicator);
         //if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT))
         //    content.add(close);
-        content.add(bg);
+        //content.add(bg);
         
         layout.putConstraint(SpringLayout.WEST, record, 40, SpringLayout.WEST, content);
         layout.putConstraint(SpringLayout.NORTH, record, 40, SpringLayout.NORTH, content);
@@ -199,8 +207,8 @@ public class Window extends JFrame implements TransformedEventListener {
         layout.putConstraint(SpringLayout.WEST, fIndicator, 263, SpringLayout.WEST, content);
         layout.putConstraint(SpringLayout.NORTH, fIndicator, 233, SpringLayout.NORTH, content);
         
-        layout.putConstraint(SpringLayout.WEST, close, 415, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, close, 0, SpringLayout.NORTH, content);
+        //layout.putConstraint(SpringLayout.WEST, close, 415, SpringLayout.WEST, content);
+        //layout.putConstraint(SpringLayout.NORTH, close, 0, SpringLayout.NORTH, content);
         
         content.setOpaque(!opaque);
         
