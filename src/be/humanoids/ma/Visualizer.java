@@ -106,7 +106,7 @@ public class Visualizer extends JPanel {
             }
             fheight = fheight/compression;
             int wheight = (int)(Math.floor((fheight+128)/factor));
-            System.out.println(wheight+" "+img.getHeight());
+
             img.setRGB(i,Math.abs(img.getHeight()-wheight) ,col);
         }
 
@@ -156,7 +156,8 @@ public class Visualizer extends JPanel {
                          RenderingHints.VALUE_ANTIALIAS_ON);
         
         createImage();
-        g2d.drawImage(img,0 ,-this.getHeight(), this);
+        //g2d.drawImage(img,0 ,-this.getHeight(), this);
+        g2d.drawImage(img, null, 0, 0);
     }
     
     public void toggleType() {

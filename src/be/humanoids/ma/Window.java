@@ -167,14 +167,14 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         pIndicator = new PointerDisplay();
         
         // fft equalizer
-        equalizer = new Visualizer(200,100,Visualizer.Type.EQUALIZER);
+        equalizer = new Visualizer(300,200,Visualizer.Type.EQUALIZER);
         
         // waveform display
-        waveform = new Visualizer(200, 100, Visualizer.Type.WAVEFORM);
+        waveform = new Visualizer(300, 200, Visualizer.Type.WAVEFORM);
         
         SpringLayout layout = new SpringLayout();
         JPanel content = new JPanel(layout);
-        content.setSize(450, 430);
+        content.setSize(900, 450);
         content.add(record);
         content.add(bfSpin);
         content.add(toSpin);
@@ -218,11 +218,11 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         layout.putConstraint(SpringLayout.WEST, fIndicator, 263, SpringLayout.WEST, content);
         layout.putConstraint(SpringLayout.NORTH, fIndicator, 233, SpringLayout.NORTH, content);
         
-        layout.putConstraint(SpringLayout.WEST, equalizer, 20, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.SOUTH, equalizer, 5, SpringLayout.SOUTH, content);
+        layout.putConstraint(SpringLayout.WEST, equalizer, 560, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, equalizer, 40, SpringLayout.NORTH, content);
         
-        layout.putConstraint(SpringLayout.EAST, waveform, 20, SpringLayout.EAST, content);
-        layout.putConstraint(SpringLayout.SOUTH, waveform, 5, SpringLayout.SOUTH, content);
+        layout.putConstraint(SpringLayout.WEST, waveform, 560, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.NORTH, waveform, 280, SpringLayout.NORTH, content);
         
         //layout.putConstraint(SpringLayout.WEST, close, 415, SpringLayout.WEST, content);
         //layout.putConstraint(SpringLayout.NORTH, close, 0, SpringLayout.NORTH, content);
