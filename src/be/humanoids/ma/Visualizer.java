@@ -1,47 +1,49 @@
 package be.humanoids.ma;
 
-import java.awt.Image;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import javax.swing.JPanel;
 /**
  * Creates a simple visualizer out of a Tone array.
  * @author Martin
  */
-public class Visualizer {
-    // Event stuff
-    @SuppressWarnings("unchecked")
-    private List<VisualizerEventListener> _listeners = new ArrayList();
-    public synchronized void addEventListener(VisualizerEventListener listener) {
-        _listeners.add(listener);
-    }
-    public synchronized void removeEventListener(VisualizerEventListener listener) {
-        _listeners.remove(listener);
-    }
-
-    private synchronized void fireEvent() {
-        VisualizerEvent event = new VisualizerEvent(this);
-        Iterator i = _listeners.iterator();
-        while(i.hasNext()) {
-            ((VisualizerEventListener) i.next()).handleVisualizerEvent(event);
-        }
-    }
-    
-    
+public class Visualizer extends JPanel {
+   
     private Tone[] freq;
     private float[] data;
     private BufferedImage img;
-    private boolean type; // false=waveform, true=fft
+    private Type type;
     private boolean ready;
     private boolean imgready;
-    static final String WAVEFORM = "Waveform";
-    static final String FFT = "Transform";
+    
+    public static enum Type {
+        EQUALIZER,
+        WAVEFORM
+    }
     
     Visualizer(int width, int height) {
+        super();
         ready = false;
         imgready = true;
         img = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+        Dimension d = new Dimension(width,height);
+        this.setSize(d);
+        this.setPreferredSize(d);
+    }
+    
+    Visualizer(int width, int height, Type type) {
+        super();
+        ready = false;
+        imgready = true;
+        img = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+        Dimension d = new Dimension(width,height);
+        this.setSize(d);
+        this.setPreferredSize(d);
+        
+        this.type = type;
     }
     
     private BufferedImage createTransformImage() {
@@ -59,14 +61,12 @@ public class Visualizer {
         
         // make sure it gets scaled, so everything fits into the graphicsfield (y-axis)
         double maxAmp = 0;
-        int maxAmpi = 0;
         for(int f=0;f<freq.length;f++) {
             if(freq[f].getAmplitude()>maxAmp) {
                 maxAmp = freq[f].getAmplitude();
-                maxAmpi = f;
             }
         }
-        System.out.println(freq[maxAmpi].getAbsoluteName());
+        // Logarithmic compression here
         double factor = img.getHeight()/maxAmp;
         
         for(int f=0;f<img.getWidth();f++) {
@@ -81,7 +81,6 @@ public class Visualizer {
             }
         }
         
-        fireEvent();
         return img;
     }
     
@@ -106,15 +105,15 @@ public class Visualizer {
                 fheight = (int)(fheight + Math.floor(data[i*compression+j]));
             }
             fheight = fheight/compression;
-            int wheight = (int)(Math.floor((fheight+128)*factor));
+            int wheight = (int)(Math.floor((fheight+128)/factor));
+            System.out.println(wheight+" "+img.getHeight());
             img.setRGB(i,Math.abs(img.getHeight()-wheight) ,col);
         }
-        
-        fireEvent();
+
         return img;
     }
     
-    public void clearImage() {
+    private void clearImage() {
         int r = 255;
         int g = 255;
         int b = 255;
@@ -131,8 +130,6 @@ public class Visualizer {
         if(!ready&&imgready) {
             ready = true;
         }
-        if(type)
-            createImage();
     }
     
     public void updateData(float[] a) {
@@ -140,13 +137,11 @@ public class Visualizer {
         if(!ready&&imgready) {
             ready = true;
         }
-        if(!type)
-            createImage();
     }
     
-    public BufferedImage createImage() {
+    private BufferedImage createImage() {
         if(ready) {
-            if(type)
+            if(type == Type.EQUALIZER)
                 return this.createTransformImage();
             else
                 return this.createWaveformImage();
@@ -154,30 +149,28 @@ public class Visualizer {
         return null;
     }
     
-    public Image getImage() {
-        return img;
+    @Override
+    public void paintComponent(Graphics g) {
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                         RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        createImage();
+        g2d.drawImage(img,0 ,-this.getHeight(), this);
     }
     
     public void toggleType() {
-        type = !type;
-    }
-    
-    public void setType(String t) {
-        switch (t) {
-            case Visualizer.FFT:
-                type = true;
-                break;
-            case Visualizer.WAVEFORM:
-                type = false;
-                break;
-        }
-        
-    }
-    
-    public String getType() {
-        if(type)
-            return Visualizer.FFT;
+        if( type == Type.EQUALIZER )
+            type = Type.WAVEFORM;
         else
-            return Visualizer.WAVEFORM;
+            type = Type.EQUALIZER;
+    }
+    
+    public void setType(Type t) {
+        this.type = t;
+    }
+    
+    public Type getType() {
+        return this.type;
     }
 }

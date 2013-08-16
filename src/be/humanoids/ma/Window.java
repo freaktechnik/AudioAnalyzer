@@ -13,7 +13,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
  * the main Window Object, is a singleton.
  * @author Martin
  */
-public class Window extends JFrame implements TransformedEventListener {
+public class Window extends JFrame implements TransformedEventListener, InputEventListener {
     private static Window singletonWindow;
     private boolean recording = false;
     private JButton record;
@@ -22,6 +22,9 @@ public class Window extends JFrame implements TransformedEventListener {
     private ImageIcon normalRecord;
     private ImageIcon recordingRecord;
     private boolean opaque;
+    
+    private Visualizer equalizer;
+    private Visualizer waveform;
     
     private Filter stabilizer;
     AudioInput a;
@@ -163,9 +166,15 @@ public class Window extends JFrame implements TransformedEventListener {
         // offset indicator
         pIndicator = new PointerDisplay();
         
+        // fft equalizer
+        equalizer = new Visualizer(200,100,Visualizer.Type.EQUALIZER);
+        
+        // waveform display
+        waveform = new Visualizer(200, 100, Visualizer.Type.WAVEFORM);
+        
         SpringLayout layout = new SpringLayout();
         JPanel content = new JPanel(layout);
-        content.setSize(450, 320);
+        content.setSize(450, 430);
         content.add(record);
         content.add(bfSpin);
         content.add(toSpin);
@@ -176,6 +185,8 @@ public class Window extends JFrame implements TransformedEventListener {
         content.add(label3);
         content.add(label4);
         content.add(pIndicator);
+        content.add(equalizer);
+        content.add(waveform);
         //if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT))
         //    content.add(close);
         //content.add(bg);
@@ -207,6 +218,12 @@ public class Window extends JFrame implements TransformedEventListener {
         layout.putConstraint(SpringLayout.WEST, fIndicator, 263, SpringLayout.WEST, content);
         layout.putConstraint(SpringLayout.NORTH, fIndicator, 233, SpringLayout.NORTH, content);
         
+        layout.putConstraint(SpringLayout.WEST, equalizer, 20, SpringLayout.WEST, content);
+        layout.putConstraint(SpringLayout.SOUTH, equalizer, 5, SpringLayout.SOUTH, content);
+        
+        layout.putConstraint(SpringLayout.EAST, waveform, 20, SpringLayout.EAST, content);
+        layout.putConstraint(SpringLayout.SOUTH, waveform, 5, SpringLayout.SOUTH, content);
+        
         //layout.putConstraint(SpringLayout.WEST, close, 415, SpringLayout.WEST, content);
         //layout.putConstraint(SpringLayout.NORTH, close, 0, SpringLayout.NORTH, content);
         
@@ -226,7 +243,7 @@ public class Window extends JFrame implements TransformedEventListener {
         setIconImages(icons);
 
         getContentPane().add(content);
-        setSize(450, 320);
+        setSize(450, 430);
         //if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT)) {
         //    setUndecorated(true);
         //    setBackground(alphaZero);
@@ -264,6 +281,7 @@ public class Window extends JFrame implements TransformedEventListener {
             else {
                 a.startRecording();
                 a.arthread.setEventTarget(this);
+                a.arthread.addEventListener(this);
                 a.resumeRecording();
                 record.setIcon(recordingRecord);
             }
@@ -273,8 +291,14 @@ public class Window extends JFrame implements TransformedEventListener {
     }
     
     @Override
+    public void handleInputEvent( EventObject e, float[] data) {
+        waveform.updateData( data );
+    }
+    
+    @Override
     public void handleTransformEvent(EventObject e, Tone[] freq) {
         stabilizer.setNewTone(freq);
+        equalizer.updateFrequencies( freq );
         if(recording) {
             Tone temp = stabilizer.getTone();
             label.setText(temp.getAbsoluteName());
