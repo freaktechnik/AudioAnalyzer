@@ -1,10 +1,10 @@
 package be.humanoids.ma;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
@@ -12,19 +12,15 @@ import javax.swing.JPanel;
  * @author Martin
  */
 public class PointerDisplay extends JPanel{
-    private ImageIcon pointer;
     private double angle;
     private int center;
     
     
     PointerDisplay() {
         super();
-        pointer = new ImageIcon(getClass().getResource("/assets/pointer_p.png"));
         angle = 0;
-        Dimension d = new Dimension(259,133);
-        this.setSize(d);
         center = 130;
-        this.setPreferredSize(d);
+        this.setPreferredSize( new Dimension(300, 200) ) ;
     }
     
     /**
@@ -36,18 +32,37 @@ public class PointerDisplay extends JPanel{
         if(a>=-0.5&&a<=0.5) {
             angle = a*Math.PI;
         }
-        this.paintComponent(this.getGraphics());
+        repaint();
     }
     
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                         RenderingHints.VALUE_ANTIALIAS_ON);
-        //center = this.getWidth()/2;
-        g2d.translate(center, this.getHeight()-4);
-        g2d.rotate(angle);
-
-        g2d.drawImage(pointer.getImage(), -4, -this.getHeight()+4, this);
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        drawScale(g2d);
+        
+        center = this.getWidth()/2;
+        g2d.setColor(Color.red);
+        g2d.drawLine(center, getHeight(), (int)Math.sin(angle)*getHeight(), (int)Math.cos(angle)*getHeight());
+    }
+    
+    private void drawScale( Graphics2D g ) {
+        
+        double angle = 0;
+        int length = 10;
+        int height = getHeight();
+        g.setColor(Color.black);
+        for(int i = 0; i < 18; i++)
+        {
+            angle =  i * 10 / Math.PI;
+            g.drawLine((int)Math.sin(angle)*(height-length),
+                       (int)Math.cos(angle)*(height-length),
+                       (int)Math.sin(angle)*height,
+                       (int)Math.cos(angle)*height);
+        }
     }
 }

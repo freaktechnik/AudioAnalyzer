@@ -8,7 +8,6 @@ import java.util.EventObject;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicButtonUI;
 /**
  * the main Window Object, is a singleton.
  * @author Martin
@@ -21,7 +20,6 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
     private PointerDisplay pIndicator;
     private ImageIcon normalRecord;
     private ImageIcon recordingRecord;
-    private boolean opaque;
     
     private Visualizer equalizer;
     private Visualizer waveform;
@@ -42,27 +40,11 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         }
         catch(Exception e) {
             System.out.println("Couldn't use native look and feel");
-        }
-        
-        opaque = true;
-        
-        GraphicsEnvironment ge =
-            GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gds = ge.getDefaultScreenDevice();
-        
-        final Color alphaZero = new Color(0, true);
+        }       
         
         // start/stop button
-        normalRecord = new ImageIcon(getClass().getResource("/assets/button_normal.png"));
-        recordingRecord = new ImageIcon(getClass().getResource("/assets/button_pressed.png"));
-        record = new JButton(normalRecord);
-        record.setPressedIcon(recordingRecord);
-        record.setOpaque(!opaque);
-        record.setUI(new BasicButtonUI());
-        record.setBorderPainted(false);
-        Dimension bSize = new Dimension(60,65);
-        record.setPreferredSize(bSize);
-        record.setSize(bSize);
+        record = new JButton("Start");//normalRecord);
+
         record.addActionListener(new ActionListener() {
               @Override
 	      public void actionPerformed(ActionEvent e) {
@@ -70,31 +52,11 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
 	      }
         });
         record.setEnabled(false);
-        
-        // close button
-        /*
-        JButton close = new JButton(new ImageIcon(getClass().getResource("/assets/close_normal.png")));
-        close.setPressedIcon(new ImageIcon(getClass().getResource("/assets/close.png")));
-        close.setOpaque(!opaque);
-        close.setUI(new BasicButtonUI());
-        close.setBorderPainted(false);
-        Dimension cSize = new Dimension(22,27);
-        close.setPreferredSize(cSize);
-        close.setSize(cSize);
-        close.addActionListener(new ActionListener() {
-              @Override
-	      public void actionPerformed(ActionEvent e) {
-                  System.exit(0);
-	      }
-        });
-        */
+
         // spinner for ToneOffset
         String[] pitches = {"C","Bb","F","Eb"};
         SpinnerModel tosm = new SpinnerListModel(pitches);
         final JSpinner toSpin = new JSpinner(tosm);
-        Dimension sSize = new Dimension(60,24);
-        toSpin.setPreferredSize(sSize);
-        toSpin.setSize(sSize);
         toSpin.addChangeListener(
                 new ChangeListener(){
                     @Override
@@ -119,8 +81,6 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         // spinner for BaseFrequency
         SpinnerNumberModel bfnm = new SpinnerNumberModel((int)Tone.getBaseFrequency(),1,10000,1);
         final JSpinner bfSpin = new JSpinner(bfnm);
-        bfSpin.setPreferredSize(sSize);
-        bfSpin.setSize(sSize);
         
         bfSpin.addChangeListener(
                 new ChangeListener(){
@@ -167,67 +127,81 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         pIndicator = new PointerDisplay();
         
         // fft equalizer
-        equalizer = new Visualizer(300,200,Visualizer.Type.EQUALIZER);
+        equalizer = new Visualizer(Visualizer.Type.EQUALIZER);
         
         // waveform display
-        waveform = new Visualizer(300, 200, Visualizer.Type.WAVEFORM);
+        waveform = new Visualizer(Visualizer.Type.WAVEFORM);
         
-        SpringLayout layout = new SpringLayout();
-        JPanel content = new JPanel(layout);
-        content.setSize(900, 450);
-        content.add(record);
-        content.add(bfSpin);
-        content.add(toSpin);
-        content.add(fIndicator);
-        content.add(label);
-        content.add(label1);
-        content.add(label2);
-        content.add(label3);
-        content.add(label4);
-        content.add(pIndicator);
-        content.add(equalizer);
-        content.add(waveform);
-        //if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT))
-        //    content.add(close);
-        //content.add(bg);
+        JPanel content = new JPanel( new GridBagLayout() );
         
-        layout.putConstraint(SpringLayout.WEST, record, 40, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, record, 40, SpringLayout.NORTH, content);
+        GridBagConstraints c = new GridBagConstraints();
         
-        layout.putConstraint(SpringLayout.WEST, bfSpin, 40, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, bfSpin, 220, SpringLayout.NORTH, content);
+        // Tuner indicator with pitch
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 5;
+        c.gridheight = 3;
+        c.insets = new Insets( 5, 5, 5, 5);
+        c.weightx = 1;
+        c.weighty = 1;
+        c.fill  = GridBagConstraints.HORIZONTAL;
+        content.add( pIndicator, c);
         
-        layout.putConstraint(SpringLayout.WEST, toSpin, 40, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, toSpin, 170, SpringLayout.NORTH, content);
+        // waveform display
+        c.gridx = 5;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.BOTH;
+        content.add(waveform, c);
         
-        layout.putConstraint(SpringLayout.WEST, label, 260, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, label, 220, SpringLayout.NORTH, content);
+        // tone name indicators
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.weighty = 0;
+        c.weightx = 0.2;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        content.add(label1, c);
         
-        layout.putConstraint(SpringLayout.WEST, label1, 160, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, label1, 220, SpringLayout.NORTH, content);
-        layout.putConstraint(SpringLayout.WEST, label2, 210, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, label2, 220, SpringLayout.NORTH, content);
-        layout.putConstraint(SpringLayout.WEST, label3, 310, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, label3, 220, SpringLayout.NORTH, content);
-        layout.putConstraint(SpringLayout.WEST, label4, 360, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, label4, 220, SpringLayout.NORTH, content);
+        c.gridx = 1;
+        content.add( label2, c );
         
-        layout.putConstraint(SpringLayout.WEST, pIndicator, 136, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, pIndicator, 56, SpringLayout.NORTH, content);
+        c.gridx = 2;
+        content.add( fIndicator, c );
+        content.add( label, c );
         
-        layout.putConstraint(SpringLayout.WEST, fIndicator, 263, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, fIndicator, 233, SpringLayout.NORTH, content);
+        c.gridx = 3;
+        content.add(label3, c);
         
-        layout.putConstraint(SpringLayout.WEST, equalizer, 560, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, equalizer, 40, SpringLayout.NORTH, content);
+        c.gridx = 4;
+        content.add(label4, c);
         
-        layout.putConstraint(SpringLayout.WEST, waveform, 560, SpringLayout.WEST, content);
-        layout.putConstraint(SpringLayout.NORTH, waveform, 280, SpringLayout.NORTH, content);
+        // Record button
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridheight = 2;
+        c.gridwidth = 2;
+        c.weighty = 0;
+        c.fill = GridBagConstraints.NONE;
+        content.add(record, c);
         
-        //layout.putConstraint(SpringLayout.WEST, close, 415, SpringLayout.WEST, content);
-        //layout.putConstraint(SpringLayout.NORTH, close, 0, SpringLayout.NORTH, content);
+        // spinners
+        c.gridx = 2;
+        c.gridheight = 1;
+        c.gridwidth = 3;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        content.add( bfSpin, c);
         
-        content.setOpaque(!opaque);
+        c.gridy = 5;
+        content.add( toSpin, c);
+        
+        // Equalizer display
+        c.gridx = 5;
+        c.gridy = 3;
+        c.gridwidth = 5;
+        c.gridheight = 3;
+        c.fill = GridBagConstraints.BOTH;
+        content.add(equalizer, c);
         
         WindowMover.addMoving(this);
         
@@ -244,10 +218,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
 
         getContentPane().add(content);
         setSize(450, 430);
-        //if(gds.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSPARENT)) {
-        //    setUndecorated(true);
-        //    setBackground(alphaZero);
-        //}
+
         setVisible(true);
         
     }
@@ -268,7 +239,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         if(a!=null) {
             if(recording) {
                 a.stopRecording();
-                record.setIcon(normalRecord);
+                record.setText("Start");
                 label.setText(" ");
                 label1.setText(" ");
                 label2.setText(" ");
@@ -283,7 +254,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
                 a.arthread.setEventTarget(this);
                 a.arthread.addEventListener(this);
                 a.resumeRecording();
-                record.setIcon(recordingRecord);
+                record.setText("Stop");
             }
             
             recording = !recording;

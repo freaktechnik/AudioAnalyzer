@@ -1,6 +1,5 @@
 package be.humanoids.ma;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -24,24 +23,19 @@ public class Visualizer extends JPanel {
         WAVEFORM
     }
     
-    Visualizer(int width, int height) {
+    Visualizer() {
         super();
         ready = false;
         imgready = true;
-        img = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
-        Dimension d = new Dimension(width,height);
-        this.setSize(d);
-        this.setPreferredSize(d);
+        
+        this.type = Type.WAVEFORM;
+        
     }
     
-    Visualizer(int width, int height, Type type) {
+    Visualizer(Type type) {
         super();
         ready = false;
         imgready = true;
-        img = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
-        Dimension d = new Dimension(width,height);
-        this.setSize(d);
-        this.setPreferredSize(d);
         
         this.type = type;
     }
@@ -97,17 +91,24 @@ public class Visualizer extends JPanel {
             compression = (int)Math.floor(data.length/img.getWidth());
         }
         
-        double factor = 256/img.getHeight();
+        double factor = img.getHeight()/256;
+        
+        int fheight, wheight;
         
         for(int i=0;i<img.getWidth();i++) {
-            int fheight = 0;
-            for(int j=0;j<compression;j++) {
-                fheight = (int)(fheight + Math.floor(data[i*compression+j]));
-            }
-            fheight = fheight/compression;
-            int wheight = (int)(Math.floor((fheight+128)/factor));
+            try {
+                fheight = 0;
+                for(int j=0;j<compression;j++) {
+                    fheight = (int)(fheight + Math.floor(data[i*compression+j]));
+                }
+                fheight = fheight/compression;
+                wheight = (int)(Math.floor((fheight+128)*factor));
 
-            img.setRGB(i,Math.abs(img.getHeight()-wheight) ,col);
+                img.setRGB(i,Math.abs(img.getHeight()-wheight) ,col);
+            }
+            catch(Exception e) {
+                System.out.println(e);
+            }
         }
 
         return img;
@@ -140,6 +141,7 @@ public class Visualizer extends JPanel {
     }
     
     private BufferedImage createImage() {
+        img = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
         if(ready) {
             if(type == Type.EQUALIZER)
                 return this.createTransformImage();
