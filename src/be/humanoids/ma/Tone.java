@@ -72,6 +72,7 @@ public class Tone {
     public String getAbsoluteName(int offset) {
         if(!stepsGenerated)
             getSteps();
+        
         switch((steps+Tone.offset+offset)%Tone.toneSteps) {
             case 11: return "g#";
             case 10: return "g";

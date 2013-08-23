@@ -132,26 +132,9 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         // waveform display
         waveform = new Visualizer(Visualizer.Type.WAVEFORM);
         
-        JPanel content = new JPanel( new GridBagLayout() );
+        JPanel controls = new JPanel( new GridBagLayout() );
         
         GridBagConstraints c = new GridBagConstraints();
-        
-        // Tuner indicator with pitch
-        c.gridx = 0;
-        c.gridy = 0;
-        c.gridwidth = 5;
-        c.gridheight = 3;
-        c.insets = new Insets( 5, 5, 5, 5);
-        c.weightx = 1;
-        c.weighty = 1;
-        c.fill  = GridBagConstraints.HORIZONTAL;
-        content.add( pIndicator, c);
-        
-        // waveform display
-        c.gridx = 5;
-        c.weightx = 1;
-        c.fill = GridBagConstraints.BOTH;
-        content.add(waveform, c);
         
         // tone name indicators
         c.gridx = 0;
@@ -160,21 +143,22 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         c.gridheight = 1;
         c.weighty = 0;
         c.weightx = 0.2;
+        c.insets = new Insets( 5, 5, 5, 5);
         c.fill = GridBagConstraints.HORIZONTAL;
-        content.add(label1, c);
+        controls.add(label1, c);
         
         c.gridx = 1;
-        content.add( label2, c );
+        controls.add( label2, c );
         
         c.gridx = 2;
-        content.add( fIndicator, c );
-        content.add( label, c );
+        controls.add( fIndicator, c );
+        controls.add( label, c );
         
         c.gridx = 3;
-        content.add(label3, c);
+        controls.add(label3, c);
         
         c.gridx = 4;
-        content.add(label4, c);
+        controls.add(label4, c);
         
         // Record button
         c.gridx = 0;
@@ -183,27 +167,26 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         c.gridwidth = 2;
         c.weighty = 0;
         c.fill = GridBagConstraints.NONE;
-        content.add(record, c);
+        controls.add(record, c);
         
         // spinners
         c.gridx = 2;
         c.gridheight = 1;
         c.gridwidth = 3;
         c.fill = GridBagConstraints.HORIZONTAL;
-        content.add( bfSpin, c);
+        controls.add( bfSpin, c);
         
         c.gridy = 5;
-        content.add( toSpin, c);
+        controls.add( toSpin, c);
         
-        // Equalizer display
-        c.gridx = 5;
-        c.gridy = 3;
-        c.gridwidth = 5;
-        c.gridheight = 3;
-        c.fill = GridBagConstraints.BOTH;
-        content.add(equalizer, c);
+        GridLayout mainLayout = new GridLayout(2, 2, 10, 10);
+        JPanel content = new JPanel();
+        content.setLayout( mainLayout );
         
-        WindowMover.addMoving(this);
+        content.add( pIndicator );
+        content.add( waveform );
+        content.add( controls );
+        content.add( equalizer );
         
         setTitle("PerfectTone");
         setDefaultCloseOperation(EXIT_ON_CLOSE);

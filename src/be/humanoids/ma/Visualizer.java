@@ -1,5 +1,6 @@
 package be.humanoids.ma;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -29,6 +30,7 @@ public class Visualizer extends JPanel {
         imgready = true;
         
         this.type = Type.WAVEFORM;
+        this.setPreferredSize( new Dimension(300, 200) ) ;
         
     }
     
@@ -38,6 +40,7 @@ public class Visualizer extends JPanel {
         imgready = true;
         
         this.type = type;
+        this.setPreferredSize( new Dimension(300, 200) ) ;
     }
     
     private BufferedImage createTransformImage() {

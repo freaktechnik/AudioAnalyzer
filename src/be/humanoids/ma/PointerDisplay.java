@@ -42,27 +42,45 @@ public class PointerDisplay extends JPanel{
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                              RenderingHints.VALUE_ANTIALIAS_ON);
-        
-        drawScale(g2d);
-        
+
         center = this.getWidth()/2;
+        drawScale(g2d);
+
         g2d.setColor(Color.red);
-        g2d.drawLine(center, getHeight(), (int)Math.sin(angle)*getHeight(), (int)Math.cos(angle)*getHeight());
+        
+        int radius = getHeight() > getWidth() / 2 ? getWidth() / 2 : getHeight();
+        int pointerLength = radius - 5;
+        g2d.drawLine(center, radius, center - (int)(Math.cos(angle)*pointerLength), radius - (int)(Math.sin(angle)*pointerLength));
     }
     
     private void drawScale( Graphics2D g ) {
         
-        double angle = 0;
-        int length = 10;
-        int height = getHeight();
+        double ang;
+        int radius = getHeight() > getWidth() / 2 ? getWidth() / 2 : getHeight();
+        int innerRad = radius - 10;
+        int semiRad = radius - 5;
         g.setColor(Color.black);
-        for(int i = 0; i < 18; i++)
+        
+        int x, y;
+        
+        for(int i = 0; i <= 36; i++)
         {
-            angle =  i * 10 / Math.PI;
-            g.drawLine((int)Math.sin(angle)*(height-length),
-                       (int)Math.cos(angle)*(height-length),
-                       (int)Math.sin(angle)*height,
-                       (int)Math.cos(angle)*height);
+            ang =  ( i * 5.0 ) / 180.0 * Math.PI;
+            
+            if( i% 2 == 0)
+            {
+                x = (int)(Math.cos(ang) * radius);
+                y = (int)(Math.sin(ang) * radius);
+            }
+            else
+            {
+                x = (int)(Math.cos(ang) * semiRad);
+                y = (int)(Math.sin(ang) * semiRad);
+            }
+
+            g.drawLine(center - (int)( Math.cos(ang) * innerRad ),
+                       radius - (int)( Math.sin(ang) * innerRad ),
+                       center - x, radius - y);
         }
     }
 }
