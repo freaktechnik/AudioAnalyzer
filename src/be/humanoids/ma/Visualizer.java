@@ -52,10 +52,8 @@ public class Visualizer extends JPanel {
     
     private BufferedImage createTransformImage() {
         clearImage();
-        int r = 0;
-        int g = 255;
-        int b = 0;
-        int col = (r << 16) | (g << 8) | b; // green
+        Graphics2D g2d = img.createGraphics();
+        g2d.setColor(Color.green);
         
         // calculate required compression on x-axis
         int compression = 1;
@@ -66,7 +64,8 @@ public class Visualizer extends JPanel {
         // make sure it gets scaled, so everything fits into the graphicsfield (y-axis)
         double maxAmp = 0;
         for(int f=0;f<freq.length;f++) {
-            if(freq[f].getAmplitude()>maxAmp) {
+            if(freq[f].getAmplitude()>maxAmp)
+            {
                 maxAmp = freq[f].getAmplitude();
             }
         }
@@ -75,14 +74,14 @@ public class Visualizer extends JPanel {
         
         for(int f=img.getMinX();f<img.getWidth();f++) {
             double maxAmph = 0;
-            for(int i = f*compression;f<(f+1)*compression;f++) {
+            for(int i = f*compression;i<(f+1)*compression;i++) {
                 if(freq[i].getAmplitude()>maxAmph)
                     maxAmph=freq[i].getAmplitude();
             }
-            int fheight= (int) (maxAmph/factor);
-            for(int y = 1;y<fheight;y++) {
-                img.setRGB(f, Math.abs(img.getHeight()-y), col);
-            }
+            int fheight= (int) (maxAmph*factor);
+            g2d.drawLine(f,img.getHeight()-1,f,img.getHeight()-fheight);
+            
+            System.out.print( fheight );
         }
         
         return img;
@@ -90,10 +89,6 @@ public class Visualizer extends JPanel {
     
     private BufferedImage createWaveformImage() {
         clearImage();
-        int r = 0;
-        int g = 0;
-        int b = 255;
-        int col = (r << 16) | (g << 8) | b; // blue
         Graphics2D g2d = img.createGraphics();
         g2d.setColor(Color.yellow);
         
