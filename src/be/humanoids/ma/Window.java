@@ -96,13 +96,14 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         );
         
         // label for the Tonename
+        Font labelFont = new Font("Sans Serif", Font.PLAIN, 21);
+        
         label = new JLabel(" ",JLabel.CENTER);
         label.setForeground(Color.BLACK);
-        label.setFont(new Font("Sans Serif", Font.PLAIN, 21));
+        label.setFont(labelFont);
         
         // label for previous/next toneneames
         
-        Font labelFont = new Font("Sans Serif", Font.PLAIN, 21);
         label1 = new JLabel(" ",JLabel.CENTER);
         label1.setForeground(Color.GRAY);
         label1.setFont(labelFont);
@@ -138,7 +139,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         
         // tone name indicators
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 0;
         c.gridwidth = 1;
         c.gridheight = 1;
         c.weighty = 0;
@@ -151,7 +152,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         controls.add( label2, c );
         
         c.gridx = 2;
-        controls.add( fIndicator, c );
+        //controls.add( fIndicator, c );
         controls.add( label, c );
         
         c.gridx = 3;
@@ -162,7 +163,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         
         // Record button
         c.gridx = 0;
-        c.gridy = 4;
+        c.gridy = 1;
         c.gridheight = 2;
         c.gridwidth = 2;
         c.weighty = 0;
@@ -176,7 +177,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         c.fill = GridBagConstraints.HORIZONTAL;
         controls.add( bfSpin, c);
         
-        c.gridy = 5;
+        c.gridy = 2;
         controls.add( toSpin, c);
         
         GridLayout mainLayout = new GridLayout(2, 2, 10, 10);
@@ -247,6 +248,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
     @Override
     public void handleInputEvent( EventObject e, float[] data) {
         waveform.updateData( data );
+        this.repaint();
     }
     
     @Override
@@ -264,14 +266,14 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
                 label1.setText(" ");
                 label2.setText(" ");
             }
-            if(temp.getFrequency()<a.getAudioFormat().getSampleRate()/2) {
+            //if(temp.getFrequency()<a.getAudioFormat().getSampleRate()/2) {
                 label3.setText(temp.getAbsoluteName(1));
                 label4.setText(temp.getAbsoluteName(2));
-            }
-            else {
-                label3.setText(" ");
-                label4.setText(" ");
-            }
+            //}
+            //else {
+            //    label3.setText(" ");
+            //    label4.setText(" ");
+            //}
             pIndicator.setAngle(temp.getOffset());
             this.repaint();
         }

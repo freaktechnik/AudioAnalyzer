@@ -41,7 +41,7 @@ public class AudioRecorderThread  implements Runnable
         float actual;
         for(int i=0;i<sound.length;i++) {
             actual = (float)b.read();
-            if(actual>128)
+            if(actual>=128)
                 actual-=256;
             sound[i] = actual;
         }

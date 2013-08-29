@@ -20,6 +20,8 @@ public class Visualizer extends JPanel {
     private boolean ready;
     private boolean imgready;
     
+    private double eqfactor;
+    
     public static enum Type {
         EQUALIZER,
         WAVEFORM
@@ -29,12 +31,13 @@ public class Visualizer extends JPanel {
         super();
         ready = false;
         imgready = true;
+        eqfactor = 1;
         
-        img = new BufferedImage(300,200,BufferedImage.TYPE_INT_RGB);
+        img = new BufferedImage(400,200,BufferedImage.TYPE_INT_RGB);
         clearImage();
         
         this.type = Type.WAVEFORM;
-        this.setPreferredSize( new Dimension(300, 200) ) ;
+        this.setPreferredSize( new Dimension(400, 200) ) ;
         
     }
     
@@ -42,12 +45,13 @@ public class Visualizer extends JPanel {
         super();
         ready = false;
         imgready = true;
+        eqfactor = 1;
         
-        img = new BufferedImage(300,200,BufferedImage.TYPE_INT_RGB);
+        img = new BufferedImage(400,200,BufferedImage.TYPE_INT_RGB);
         clearImage();
         
         this.type = type;
-        this.setPreferredSize( new Dimension(300, 200) ) ;
+        this.setPreferredSize( new Dimension(400, 200) ) ;
     }
     
     private BufferedImage createTransformImage() {
@@ -71,6 +75,8 @@ public class Visualizer extends JPanel {
         }
         // Logarithmic compression here
         double factor = img.getHeight()/maxAmp;
+
+        eqfactor += ( factor - eqfactor ) / 4;
         
         for(int f=img.getMinX();f<img.getWidth();f++) {
             double maxAmph = 0;
@@ -78,10 +84,8 @@ public class Visualizer extends JPanel {
                 if(freq[i].getAmplitude()>maxAmph)
                     maxAmph=freq[i].getAmplitude();
             }
-            int fheight= (int) (maxAmph*factor);
+            int fheight= (int) (maxAmph*eqfactor);
             g2d.drawLine(f,img.getHeight()-1,f,img.getHeight()-fheight);
-            
-            System.out.print( fheight );
         }
         
         return img;
@@ -98,7 +102,7 @@ public class Visualizer extends JPanel {
             compression = (int)Math.floor(data.length/img.getWidth());
         }
         
-        double factor = img.getHeight()/256;
+        double factor = img.getHeight() / 256.0;
         
         int fheight, wheight;
         int lastx = 0, lasty = img.getHeight() / 2;
@@ -110,7 +114,7 @@ public class Visualizer extends JPanel {
                     fheight = (int)(fheight + Math.floor(data[i*compression+j]));
                 }
                 fheight = fheight/compression;
-                wheight = (int)(Math.floor((fheight+127)*factor));
+                wheight = (int)(Math.floor((fheight+128)*factor));
 
                 g2d.drawLine(lastx, lasty, i, wheight);
                 lastx = i;
@@ -149,6 +153,7 @@ public class Visualizer extends JPanel {
             else
                 return this.createWaveformImage();
         }
+        
         return null;
     }
     
