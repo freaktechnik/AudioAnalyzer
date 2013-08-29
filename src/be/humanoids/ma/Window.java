@@ -18,8 +18,6 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
     private JButton record;
     private JLabel label,label1,label2,label3,label4;
     private PointerDisplay pIndicator;
-    private ImageIcon normalRecord;
-    private ImageIcon recordingRecord;
     
     private Visualizer equalizer;
     private Visualizer waveform;
@@ -92,6 +90,25 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
                         
                         Tone.setBaseFrequency(newD);
                    }
+                }
+        );
+        
+        
+        // Checkbox for HPS
+        final JCheckBox hpsCheckbox = new JCheckBox();
+        hpsCheckbox.setText("Enable HPS");
+        
+        hpsCheckbox.addChangeListener(
+                new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        boolean HPSenabled = hpsCheckbox.getModel().isSelected();
+                        
+                        if( HPSenabled )
+                            Filter.EnableHPS();
+                        else
+                            Filter.DisableHPS();
+                    }
                 }
         );
         
@@ -179,6 +196,9 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         
         c.gridy = 2;
         controls.add( toSpin, c);
+        
+        c.gridy = 3;
+        controls.add( hpsCheckbox, c);
         
         GridLayout mainLayout = new GridLayout(2, 2, 10, 10);
         JPanel content = new JPanel();

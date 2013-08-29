@@ -14,7 +14,8 @@ public class HPS {
     private int depth;
     
     HPS(Tone[] data,int depth) {
-        this.data = data;
+        this.data = new Tone[data.length];
+        System.arraycopy(data, 0, this.data, 0, data.length);
         this.depth = depth;
         hps = this.calculateHPS();
     }
@@ -25,7 +26,6 @@ public class HPS {
         double maxAmp = 0;
         int maxI = 0;
         for(int i=2;i<=depth;++i) {
-            System.out.println(i);
             // always make the spectrum half as long
             tempSpec = shrinkSpectrum(data,i);
             for(int j=0;j<tempSpec.length;++j) {

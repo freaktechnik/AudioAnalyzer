@@ -10,6 +10,8 @@ public class Filter {
     private int lastTone;
     private boolean firstCycle;
     
+    private static boolean EnableHPS = false;
+    
     Filter() {
         lastTones = new Tone[toneBufferSize];
         firstCycle = false;
@@ -22,8 +24,23 @@ public class Filter {
      * @param newSet Spectrum the Tone gets extracted from
      */
     public void setNewTone(Tone[] newSet) {
-        HPS newTone = new HPS(newSet,3);
-        lastTones[lastTone] = newTone.getTone();
+        if( EnableHPS ) {
+            HPS newTone = new HPS(newSet,3);
+            lastTones[lastTone] = newTone.getTone();
+        }
+        else {
+            int maxI = 0;
+            double max = 0;
+            double actual;
+            for(int i=1;i<newSet.length;++i) {
+                actual = newSet[i].getAmplitude();
+                if(actual>max) {
+                    max = actual;
+                    maxI = i;
+                }
+            }
+            lastTones[lastTone] = newSet[maxI];
+        }
         lastTone = (lastTone+1)%Filter.toneBufferSize;
         if(lastTone==0&&!firstCycle)
             firstCycle = !firstCycle;
@@ -60,5 +77,17 @@ public class Filter {
     public void reset() {
         firstCycle = false;
         lastTone = 0;
+    }
+    
+    public static void EnableHPS() {
+        EnableHPS = true;
+    }
+    
+    public static void DisableHPS() {
+        EnableHPS = false;
+    }
+    
+    public static void ToggleHPS() {
+        EnableHPS = !EnableHPS;
     }
 }
