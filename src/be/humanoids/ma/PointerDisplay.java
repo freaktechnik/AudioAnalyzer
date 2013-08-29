@@ -50,6 +50,12 @@ public class PointerDisplay extends JPanel{
         
         int radius = getHeight() > getWidth() / 2 ? getWidth() / 2 : getHeight();
         int pointerLength = radius - 5;
+        
+        if( angle < 0 )
+        {
+            angle += Math.PI;
+        }
+        
         g2d.drawLine(center, radius, center - (int)(Math.cos(angle)*pointerLength), radius - (int)(Math.sin(angle)*pointerLength));
     }
     

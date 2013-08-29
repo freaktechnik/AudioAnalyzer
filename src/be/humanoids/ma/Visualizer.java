@@ -1,5 +1,6 @@
 package be.humanoids.ma;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -29,6 +30,9 @@ public class Visualizer extends JPanel {
         ready = false;
         imgready = true;
         
+        img = new BufferedImage(300,200,BufferedImage.TYPE_INT_RGB);
+        clearImage();
+        
         this.type = Type.WAVEFORM;
         this.setPreferredSize( new Dimension(300, 200) ) ;
         
@@ -38,6 +42,9 @@ public class Visualizer extends JPanel {
         super();
         ready = false;
         imgready = true;
+        
+        img = new BufferedImage(300,200,BufferedImage.TYPE_INT_RGB);
+        clearImage();
         
         this.type = type;
         this.setPreferredSize( new Dimension(300, 200) ) ;
@@ -66,7 +73,7 @@ public class Visualizer extends JPanel {
         // Logarithmic compression here
         double factor = img.getHeight()/maxAmp;
         
-        for(int f=0;f<img.getWidth();f++) {
+        for(int f=img.getMinX();f<img.getWidth();f++) {
             double maxAmph = 0;
             for(int i = f*compression;f<(f+1)*compression;f++) {
                 if(freq[i].getAmplitude()>maxAmph)
@@ -87,6 +94,8 @@ public class Visualizer extends JPanel {
         int g = 0;
         int b = 255;
         int col = (r << 16) | (g << 8) | b; // blue
+        Graphics2D g2d = img.createGraphics();
+        g2d.setColor(Color.yellow);
         
         // calculate required compression on x-axis
         int compression = 1;
@@ -97,36 +106,30 @@ public class Visualizer extends JPanel {
         double factor = img.getHeight()/256;
         
         int fheight, wheight;
+        int lastx = 0, lasty = img.getHeight() / 2;
         
-        for(int i=0;i<img.getWidth();i++) {
+        for(int i=img.getMinX();i<img.getWidth();i++) {
             try {
                 fheight = 0;
                 for(int j=0;j<compression;j++) {
                     fheight = (int)(fheight + Math.floor(data[i*compression+j]));
                 }
                 fheight = fheight/compression;
-                wheight = (int)(Math.floor((fheight+128)*factor));
+                wheight = (int)(Math.floor((fheight+127)*factor));
 
-                img.setRGB(i,Math.abs(img.getHeight()-wheight) ,col);
+                g2d.drawLine(lastx, lasty, i, wheight);
+                lastx = i;
+                lasty = wheight;
             }
             catch(Exception e) {
                 System.out.println(e);
             }
         }
-
         return img;
     }
-    
+        
     private void clearImage() {
-        int r = 255;
-        int g = 255;
-        int b = 255;
-        int col = (r << 16) | (g << 8) | b; // gives white
-        for(int x=0;x<img.getWidth();x++) {
-            for(int y=0;y<img.getHeight();y++) {
-                img.setRGB(x,y,col);
-            }
-        }
+        img.getGraphics().clearRect(img.getMinX(), img.getMinY(), img.getWidth() - 1, img.getHeight() - 1);
     }
     
     public void updateFrequencies(Tone[] f) {
