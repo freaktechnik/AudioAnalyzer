@@ -76,7 +76,13 @@ public class Visualizer extends JPanel {
         // Logarithmic compression here
         double factor = img.getHeight()/maxAmp;
 
-        eqfactor += ( factor - eqfactor ) / 4;
+        // die transformationsansicht bleibt länger klein und wird langsam grösser, past sich aber schnell an laute frequenzen an
+        if( factor < eqfactor ) {
+            eqfactor += ( factor - eqfactor ) / 2;
+        }
+        else {
+            eqfactor += ( factor - eqfactor ) / 10;
+        }
         
         for(int f=img.getMinX();f<img.getWidth();f++) {
             double maxAmph = 0;
