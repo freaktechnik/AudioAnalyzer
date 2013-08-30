@@ -113,7 +113,7 @@ public class Tone {
     }
     
     public float getAmplitudeIndB() {
-        return (float) (10*Math.log10(amplitude));
+        return (float) (10.0*Math.log10(amplitude));
     }
     
     public float getFrequency() {

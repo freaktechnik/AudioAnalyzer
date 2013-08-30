@@ -32,6 +32,12 @@ public class PointerDisplay extends JPanel{
         if(a>=-0.5&&a<=0.5) {
             angle = a*Math.PI;
         }
+        
+        if( angle < 0 )
+        {
+            angle += Math.PI;
+        }
+        
         repaint();
     }
     
@@ -48,13 +54,8 @@ public class PointerDisplay extends JPanel{
 
         g2d.setColor(Color.red);
         
-        int radius = getHeight() > getWidth() / 2 ? getWidth() / 2 : getHeight();
+        int radius = getHeight() > getWidth() / 2 ? getWidth() / 2 : getHeight()-1;
         int pointerLength = radius - 5;
-        
-        if( angle < 0 )
-        {
-            angle += Math.PI;
-        }
         
         g2d.drawLine(center, radius, center - (int)(Math.cos(angle)*pointerLength), radius - (int)(Math.sin(angle)*pointerLength));
     }
@@ -62,7 +63,7 @@ public class PointerDisplay extends JPanel{
     private void drawScale( Graphics2D g ) {
         
         double ang;
-        int radius = getHeight() > getWidth() / 2 ? getWidth() / 2 : getHeight();
+        int radius = getHeight() > getWidth() / 2 ? getWidth() / 2 : getHeight()-1;
         int innerRad = radius - 10;
         int semiRad = radius - 5;
         g.setColor(Color.black);
