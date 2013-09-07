@@ -14,6 +14,7 @@ public class Tone {
     private static double baseFrequency = 440.0; // the frequency of the tone the absolute names are relative to
     private static int toneSteps = 12;
     private static final double log2 = Math.log(2.0);
+    private static final double p0 = Math.pow( 10, -3 );
     private static double factor;
     private static final double centFactor = 1200.0/log2;
     private static int offset = 0; // offset in steps to tune diffrent instruments
@@ -112,8 +113,9 @@ public class Tone {
         return amplitude;
     }
     
-    public float getAmplitudeIndB() {
-        return (float) (10.0*Math.log10(amplitude));
+    public double getAmplitudeIndB() {
+        double log = Math.log10( amplitude / p0 );
+        return (10.0* log);
     }
     
     public float getFrequency() {

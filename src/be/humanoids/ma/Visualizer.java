@@ -68,11 +68,11 @@ public class Visualizer extends JPanel {
         // make sure it gets scaled, so everything fits into the graphicsfield (y-axis)
         double maxAmp = 0;
         for(int f=0;f<freq.length;f++) {
-            if(freq[f].getAmplitude()>maxAmp)
+            if(freq[f].getAmplitudeIndB()>maxAmp)
             {
-                maxAmp = freq[f].getAmplitude();
+                maxAmp = freq[f].getAmplitudeIndB();
             }
-        }
+        } 
         // Logarithmic compression here
         double factor = img.getHeight()/maxAmp;
 
@@ -87,8 +87,8 @@ public class Visualizer extends JPanel {
         for(int f=img.getMinX();f<img.getWidth();f++) {
             double maxAmph = 0;
             for(int i = f*compression;i<(f+1)*compression;i++) {
-                if(freq[i].getAmplitude()>maxAmph)
-                    maxAmph=freq[i].getAmplitude();
+                if(freq[i].getAmplitudeIndB()>maxAmph)
+                    maxAmph=freq[i].getAmplitudeIndB();
             }
             int fheight= (int) (maxAmph*eqfactor);
             g2d.drawLine(f,img.getHeight()-1,f,img.getHeight()-fheight);
