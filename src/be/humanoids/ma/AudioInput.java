@@ -51,7 +51,7 @@ public class AudioInput {
      * 
      * @return Captured audio
      */
-    public ByteArrayOutputStream stopRecording() {
+    public byte[] stopRecording() {
         return arthread.stop();
     }
     

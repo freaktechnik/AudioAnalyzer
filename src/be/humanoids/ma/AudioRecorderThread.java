@@ -1,12 +1,11 @@
 package be.humanoids.ma;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.sound.sampled.TargetDataLine;
 /**
  * The audio recorder thread collects the input from the soundcard, byte by byte.
@@ -18,9 +17,9 @@ public class AudioRecorderThread  implements Runnable
     boolean record = false;
     int samplelength;
     int startf;
+    ExecutorService fftPool;
     
     TargetDataLine targetDataLine;
-    ByteArrayOutputStream data;
     
     TransformedEventListener telistener;
     
@@ -35,15 +34,12 @@ public class AudioRecorderThread  implements Runnable
         _listeners.remove(listener);
     }
 
-    private synchronized void fireEvent(ByteArrayOutputStream a) {
-        float[] sound = new float[a.size()];
-        ByteArrayInputStream b = new ByteArrayInputStream(a.toByteArray());
-        float actual;
+    private synchronized void fireEvent(byte[] a) {
+        float[] sound = new float[a.length];
         for(int i=0;i<sound.length;i++) {
-            actual = (float)b.read();
-            if(actual>=128)
-                actual-=256;
-            sound[i] = actual;
+            sound[i] = (float)a[i];
+            if(sound[i]>=128)
+                sound[i] -= 255;
         }
 
         InputEvent event = new InputEvent(this);
@@ -56,17 +52,18 @@ public class AudioRecorderThread  implements Runnable
         skipped+=sound.length;
         if(skipped>=goal) {
             FFT fourier = new FFT(sound);
-            Thread fourierThread = new Thread(fourier);
             fourier.addEventListener(telistener);
-            fourierThread.start();
+            
+            fftPool.execute( fourier );
             skipped=0;
         }
     }
     
     AudioRecorderThread(int s, int l) {
-        data = new ByteArrayOutputStream();
         samplelength = l;
         startf = s;
+        
+        fftPool = Executors.newFixedThreadPool( 10 );
     }
     
     /**
@@ -78,37 +75,26 @@ public class AudioRecorderThread  implements Runnable
     public void run() {
         record = true;
         // always try, since errors can happen!
-        try {
-            if(targetDataLine==null) {
-                System.out.println("No target DataLine defined, can't start to capture it");
-            }
-            targetDataLine.start();
-            int count,off;
-            byte[] b,c;
-            c = new byte[samplelength];
-            while(record) {
-                count = targetDataLine.read(buffer, 0, buffer.length);
-                if(count > 0) {
-                    data.write(buffer, 0, count);
-                    if(data.size()>samplelength) {                        
-                        b = data.toByteArray();
-                        off = data.size()-samplelength;
-                        for(int i=0;i<samplelength;++i) {
-                            c[i] = b[off+i];
-                        }
-                        data.reset();
-                        data.write(c);
-                        fireEvent(data);
+        if(targetDataLine==null) {
+            System.out.println("No target DataLine defined, can't start to capture it");
+        }
+        targetDataLine.start();
+        int count,off;
+        byte[] c;
+        c = new byte[samplelength];
+        while(record) {
+            count = targetDataLine.read(buffer, 0, buffer.length);
+            if(count > 0) {
+                if(buffer.length>=samplelength) {                        
+                    off = buffer.length-samplelength;
+                    for(int i=0;i<samplelength;++i) {
+                        c[i] = buffer[off+i];
                     }
+                    fireEvent(c);
                 }
             }
-            data.close();
-            targetDataLine.stop();
         }
-        catch(IOException e) {
-            System.out.println(e);
-            System.exit(1);
-        }
+        targetDataLine.stop();
     }
     
     /**
@@ -118,7 +104,7 @@ public class AudioRecorderThread  implements Runnable
      */
     public void setT(TargetDataLine t) {
         targetDataLine = t;
-        goal = (int)Math.floor(targetDataLine.getFormat().getFrameRate()/40);
+        goal = 0;
     }
     
     public void setEventTarget(TransformedEventListener listener) {
@@ -130,8 +116,8 @@ public class AudioRecorderThread  implements Runnable
      * 
      * @return audio data.
      */
-    public ByteArrayOutputStream stop() {
+    public byte[] stop() {
         record = false;
-        return data;
+        return buffer;
     }
 }
