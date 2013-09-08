@@ -50,6 +50,17 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
 	      }
         });
         record.setEnabled(false);
+        
+        // about button
+        JButton about = new JButton("About");
+
+        about.addActionListener(new ActionListener() {
+              @Override
+	      public void actionPerformed(ActionEvent e) {
+                  AboutDialog a = new AboutDialog(null);
+                  a.setVisible(true);
+	      }
+        });
 
         // spinner for ToneOffset
         String[] pitches = {"C","Bb","F","Eb"};
@@ -139,7 +150,7 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
        // bg.setBackground(alphaZero);
         
         // little red arrow in the tone display
-        JLabel fIndicator = new JLabel(new ImageIcon(getClass().getResource("/assets/pointer_f.png")));
+        //JLabel fIndicator = new JLabel(new ImageIcon(getClass().getResource("/assets/pointer_f.png")));
         
         // offset indicator
         pIndicator = new PointerDisplay();
@@ -187,8 +198,13 @@ public class Window extends JFrame implements TransformedEventListener, InputEve
         c.fill = GridBagConstraints.NONE;
         controls.add(record, c);
         
+        // About button
+        c.gridy = 2;
+        controls.add(about, c);
+        
         // spinners
         c.gridx = 2;
+        c.gridy = 1;
         c.gridheight = 1;
         c.gridwidth = 3;
         c.fill = GridBagConstraints.HORIZONTAL;
