@@ -15,12 +15,26 @@ public class PointerDisplay extends JPanel{
     private double angle;
     private int center;
     
+    private double currentAngle;
+    private double oldAngle;
+    private static int CYCLE;
+    private static int STEPS;
+    private long lastStep;
+    private int step;
+    
     
     PointerDisplay() {
         super();
         angle = 0;
         center = 130;
         this.setPreferredSize( new Dimension(300, 200) ) ;
+        
+        CYCLE = 10;
+        STEPS = 18;
+        step = 0;
+        lastStep = System.currentTimeMillis();
+        currentAngle = 0;
+        oldAngle =  0;
     }
     
     /**
@@ -29,6 +43,8 @@ public class PointerDisplay extends JPanel{
      * @param a offset of the Frequency, bigger or equal than -0.5 and smaller or equal than 0.5
      */
     public void setAngle(double a) {
+        oldAngle = currentAngle;
+        step = 1;
         if(a>=-0.5&&a<=0.5) {
             angle = a*Math.PI;
         }
@@ -43,6 +59,12 @@ public class PointerDisplay extends JPanel{
     
     @Override
     public void paintComponent(Graphics g) {
+        if( step < STEPS && lastStep+CYCLE < System.currentTimeMillis() ) {
+            currentAngle = easeInOut(oldAngle,angle,STEPS,step,1.6);
+            step++;
+            lastStep = System.currentTimeMillis();
+        }
+        
         super.paintComponent(g);
         
         Graphics2D g2d = (Graphics2D)g;
@@ -57,7 +79,7 @@ public class PointerDisplay extends JPanel{
         int radius = getHeight() > getWidth() / 2 ? getWidth() / 2 : getHeight()-1;
         int pointerLength = radius - 5;
         
-        g2d.drawLine(center, radius, center - (int)(Math.cos(angle)*pointerLength), radius - (int)(Math.sin(angle)*pointerLength));
+        g2d.drawLine(center, radius, center - (int)(Math.cos(currentAngle)*pointerLength), radius - (int)(Math.sin(currentAngle)*pointerLength));
     }
     
     private void drawScale( Graphics2D g ) {
@@ -89,5 +111,11 @@ public class PointerDisplay extends JPanel{
                        radius - (int)( Math.sin(ang) * innerRad ),
                        center - x, radius - y);
         }
+    }
+    
+    private double easeInOut(double minValue,double maxValue,int totalSteps,int actualStep,double powr) { 
+        double delta = maxValue - minValue;
+	double r = minValue+(Math.pow(((double)actualStep / (double)totalSteps), powr) * delta);
+        return r;
     }
 }

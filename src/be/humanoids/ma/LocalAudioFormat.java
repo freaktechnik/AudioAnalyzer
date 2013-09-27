@@ -22,7 +22,7 @@ public class LocalAudioFormat {
     
     
     public javax.sound.sampled.AudioFormat getAudioFormat() {
-        float sampleRate = 22050.0F;
+        float sampleRate = 44100.0F;
         //8000,11025,16000,22050,44100
         int sampleSizeInBits = 8;
         //8,16
